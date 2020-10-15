@@ -332,7 +332,7 @@ map.on('click',function(evt){
 
 //geocoder
 var geocoder = new Geocoder('nominatim', {
-  provider: 'mapquest',
+  provider: 'osm',
   key: 'tHN4kYAyU8q7xHXYTDSlJDFxA6SBYnYh',
   lang: 'en-US', //en-US, fr-FR
   placeholder: 'Search for ...',
