@@ -280,7 +280,7 @@ var displayFeatureInfoClick = function (pixel) {
       content.innerHTML = feature.get('DN') + ' °C';
     } 
     else if (features.length && map.getLayerGroup()==layersp) {
-        content.innerHTML = feature.get('DN') + ' mm';
+        content.innerHTML = feature.get('DN')-50 + ' - ' +feature.get('DN') + ' mm';
     }  
     else {
         content.innerHTML = 'geen waarde';
@@ -305,7 +305,7 @@ var displayFeatureInfo = function (pixel) {
       info.innerHTML = feature.get('DN') + ' °C';
     } 
     else if (features.length && map.getLayerGroup()==layersp) {
-        info.innerHTML = feature.get('DN') + ' mm';
+        info.innerHTML = feature.get('DN')-50 + ' - ' +feature.get('DN') + ' mm';
     }  
     else {
       info.innerHTML = '&nbsp;';
