@@ -266,8 +266,11 @@ view: new ol.View({
 
 var displayFeatureInfoClick = function (pixel) {
   var features = [];
+  var laagoud='';
   map.forEachFeatureAtPixel (pixel, function (feature,layer) {
-      features.push(feature);
+      if (layer!= laagoud){
+      features.push(feature);}
+      laagoud=layer;
     });
     if (features.length >1) {
         var info = [];
@@ -285,8 +288,11 @@ var displayFeatureInfoClick = function (pixel) {
 
 var displayFeatureInfo = function (pixel) {    
   var features = [];
+  var laagoud='';
   map.forEachFeatureAtPixel (pixel,function(feature,layer) {
-      features.push(feature);
+      if (layer!= laagoud){
+      features.push(feature);}
+      laagoud=layer;
     });    
     var container = document.getElementById('info');
     if (features.length >1) {
