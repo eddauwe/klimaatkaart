@@ -36,6 +36,12 @@
         background-color:yellow;
       }
       
+      #infoprec {
+        position:absolute;
+        top:210px;
+        background-color:yellow;      
+      }
+      
       .ol-popup {
         position: absolute;
         background-color: white;
@@ -98,7 +104,7 @@
     <h1 style="text-align:center; font-size:20px;">Wereldklimaatkaart</h1>
     <div class="viewer">
         <div class="selector">
-              <input type="radio" id="tgem" checked="checked" name="radio" onclick="setMapType('tgem');" value="temp">
+              <input type="radio" id="tgem" checked="checked" name="radio" onclick="setMapType('tmax01');" value="temp">
               <label for="temp">Temperatuur</label><br>
               <input type="radio" id="ptot" name="radio" onclick="setMapType('ptot');" value="prec">   
               <label for="prec">Neerslag</label>

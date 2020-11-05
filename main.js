@@ -2,6 +2,7 @@
 
 
 var osmlayer=new ol.layer.Tile({
+name:'osmlayer',
 className:'bw',
 source: new ol.source.OSM({
     
@@ -174,26 +175,24 @@ var ptot=new ol.layer.Vector({
 name:'ptot',
 source: precsource,
 style:precstyleFunction,
-opacity:0.6
+opacity:0
 });
 
 
-var layerst=new ol.layer.Group({
-    layers:[osmlayer,tgem]
+var lagen=new ol.layer.Group({
+    layers:[osmlayer,tgem,ptot]
 });
 
-var layersp=new ol.layer.Group({
-    layers:[osmlayer,ptot]
-});
 
 function setMapType(newType){
-    if (newType=='tgem'){
-            map.setLayerGroup(layerst);
+    map.getLayers().forEach(function(layer){
+        if (layer.get('name') == newType) {
+            layer.setOpacity(0.6);
         }
-    else if (newType=='ptot'){
-            map.setLayerGroup(layersp);
-        }
-}
+        else if (layer.get('name') != 'osmlayer')
+        {layer.setOpacity(0)}
+    })
+};
 
 
 
@@ -231,7 +230,7 @@ closer.onclick = function () {
 var map = new ol.Map({
 target: 'map',
 layers:
-  layerst
+  lagen
 ,
 overlays:[overlay],
 view: new ol.View({
@@ -289,29 +288,24 @@ var displayFeatureInfoClick = function (pixel) {
 };
 
 
-var displayFeatureInfo = function (pixel) {
-    
-  switch(map.getLayerGroup()){
-    case (layerst):
-        layer=tgem;
-        break;
-    case (layersp):
-        layer=ptot;
-  }
-  layer.getFeatures(pixel).then(function (features) {
-    var feature = features.length ? features[0] : undefined;
-    var info = document.getElementById('info');
-    if (features.length && map.getLayerGroup()==layerst) {
-      info.innerHTML = feature.get('DN') + ' °C';
-    } 
-    else if (features.length && map.getLayerGroup()==layersp) {
-        info.innerHTML = feature.get('DN')-50 + ' - ' +feature.get('DN') + ' mm';
-    }  
-    else {
-      info.innerHTML = '&nbsp;';
+var displayFeatureInfo = function (pixel) {    
+  var features = [];
+  map.forEachFeatureAtPixel (pixel,function(feature,layer) {
+      features.push(feature);
+    });    
+    var container = document.getElementById('info');
+    if (features.length >1) {
+      var info = []
+      for (var i = 0, ii=features.length; i<ii;++i){
+      info.push (features[i].get('DN'));
+      } 
+      container.innerHTML = info.join (' mm <br>  ') + ' C';
     }
-  });
-};
+    else {
+      container.innerHTML = '&nbsp;';
+    }
+  };
+
 
 
 
