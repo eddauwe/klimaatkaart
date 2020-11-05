@@ -265,27 +265,22 @@ view: new ol.View({
 }*/
 
 var displayFeatureInfoClick = function (pixel) {
-    
-  switch(map.getLayerGroup()){
-    case (layerst):
-        layer=tgem;
-        break;
-    case (layersp):
-        layer=ptot;
-  }
-  layer.getFeatures(pixel).then(function (features) {
-    var feature = features.length ? features[0] : undefined;
-    if (features.length && map.getLayerGroup()==layerst) {
-      content.innerHTML = feature.get('DN') + ' °C';
-    } 
-    else if (features.length && map.getLayerGroup()==layersp) {
-        content.innerHTML = feature.get('DN')-50 + ' - ' +feature.get('DN') + ' mm';
-    }  
+  var features = [];
+  map.forEachFeatureAtPixel (pixel, function (feature,layer) {
+      features.push(feature);
+    });
+    if (features.length >1) {
+        var info = [];
+        for (var i = 0, ii=features.length; i<ii;++i){
+            info.push (features[i].get('DN'));
+        }
+        content.innerHTML = info.join (' mm <br>  ') + ' C';
+        //content.innerHTML = feature.get('DN')-50 + ' - ' +feature.get('DN') + ' mm';
+    }
     else {
         content.innerHTML = 'geen waarde';
     }
-  });
-};
+  };
 
 
 var displayFeatureInfo = function (pixel) {    
