@@ -164,18 +164,30 @@ var precstyleFunction= function (feature,resolution){
 }
 
 
+var standaardstijl = new ol.style.Style({
+    fill:new ol.style.Fill({color:"yellow"})
+})
+
+
 var tgem=new ol.layer.Vector({
-name:'tmax01',
-source: tempsource,
-style:tempstyleFunction,
-opacity:0.6
+    name:'tmax01',
+    source: tempsource,
+    style:tempstyleFunction,
+    opacity:0.6
 });
 
 var ptot=new ol.layer.Vector({
-name:'ptot',
-source: precsource,
-style:precstyleFunction,
-opacity:0
+    name:'ptot',
+    source: precsource,
+    style:precstyleFunction,
+    opacity:0
+});
+
+var intersect=new ol.layer.Vector({
+    name:'intersect',
+    source:tempsource,
+    style:standaardstijl,
+    opacity:0  
 });
 
 

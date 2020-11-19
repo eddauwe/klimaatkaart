@@ -25,10 +25,18 @@
 
       .map {
         position:absolute;
-        left:160px;
+        left:200px;
         width:1400px;
         height:700px;
       }
+      
+      .ui-content {
+        position:absolute;
+        height:400px;
+        width:550px;
+        bottom: 40px;
+      }
+      
       
       #info {
         position:absolute;
@@ -36,11 +44,6 @@
         background-color:yellow;
       }
       
-      #infoprec {
-        position:absolute;
-        top:210px;
-        background-color:yellow;      
-      }
       
       .ol-popup {
         position: absolute;
@@ -91,13 +94,68 @@
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
     <title>OpenLayers example</title>
     <!--jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!--<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>-->
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    
+    
+    
     <!--geojson object-->
     <script src="tmax_gem_vector.geojson.js"></script>
     <script src="prec_som_reclass.geojson.js"></script>
     <!--geocoder-->
     <link href="https://unpkg.com/ol-geocoder/dist/ol-geocoder.min.css" rel="stylesheet">
+    
+    
     <script src="https://unpkg.com/ol-geocoder"></script>
+
+    
+    <script>
+  $( function() {
+    $( "#slider-range1" ).slider({
+      min:0,
+      max:5000,
+      orientation: "vertical",
+      range: true,
+      values: [ 0, 5000 ],
+      slide: function( event, ui ) {
+        $( "#minp" ).val(ui.values[ 0 ]); 
+        $( "#maxp" ).val(ui.values[ 1 ]);
+      }
+    });
+    $( "#minp" ).val($( "#slider-range1" ).slider( "values", 0 ));
+    $( "#maxp" ).val($( "#slider-range1" ).slider( "values", 1 ));
+  } );
+  //update geojson bij verschuiven slider
+  //$( ".slider-range1" ).on( "slidechange", function(event,precBounds()) {} );
+  
+  
+
+  
+  $( function() {
+    $( "#slider-range2" ).slider({
+      min:-45,
+      max:45,
+      orientation: "vertical",
+      range: true,
+      values: [ -45, 45 ],
+      slide: function( event, ui ) {
+        $( "#mint" ).val(ui.values[ 0 ]); 
+        $( "#maxt" ).val(ui.values[ 1 ]);
+      }
+    });
+    $( "#mint" ).val($( "#slider-range2" ).slider( "values", 0 ));
+    $( "#maxt" ).val($( "#slider-range2" ).slider( "values", 1 ));
+  } );
+
+
+  
+  </script>
+    
+    
   </head>
   <body>
 
@@ -106,17 +164,72 @@
         <div class="selector">
               <input type="radio" id="tgem" checked="checked" name="radio" onclick="setMapType('tmax01');" value="temp">
               <label for="temp">Temperatuur</label><br>
-              <input type="radio" id="ptot" name="radio" onclick="setMapType('ptot');" value="prec">   
-              <label for="prec">Neerslag</label>
+              <input type="radio" id="ptot" name="radio" onclick="setMapType('ptot');" value="prec">  
+              <label for="prec">Neerslag</label><br>
+              <input type="radio" id="intersect" name="radio" onclick="setMapType('intersect');" value="is">  
+              <label for="is">Intersection</label>
         </div>
+
         <div id="map" class="map"></div> 
      
         <div id="info">&nbsp;</div>
+        
+        
+        
+
+        
+
     </div>
+    
+    <!--<div data-role="main" class="ui-content">
+        <div data-role="rangeslider">
+          <label for="range-1a">Neerslag:</label>
+          <input type="range" name="range-1a" id="range-1a" value="0" min="0" max="5000">
+          <label for="range-1b">Neerslag:</label>
+          <input type="range" name="range-1b" id="range-1b" value="5000" min="0" max="5000">
+        </div>
+        
+        <input type = "button" value="Confirm" onclick="LowerBound()">
+        
+        
+        <div data-role="rangeslider">
+          <label for="price-min">Temperatuur:</label>
+          <input type="range" name="price-min" id="price-min" value="-45" min="-45" max="45">
+          <label for="price-max">Temperatuur:</label>
+          <input type="range" name="price-max" id="price-max" value="45" min="-45" max="45">
+        </div>
+        
+        
+    </div>-->
+    
     <div id="popup" class="ol-popup">
         <a href="#" id="popup-closer" class="ol-popup-closer"></a>
         <div id="popup-content"></div>
     </div>   
     <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="sliderselect.js"></script>
+    
+    <!--nieuwe slider--> 
+    <div style="position:absolute;height:250px;top:300px;">
+    <label>Temperatuur</label><br><br>
+    <input type="text" id="maxt" readonly style=" width: 25px;border:0; color:#f6931f; font-weight:bold;"></input>
+    <div id="slider-range2" style="position:absolute;height:250px;top:75px;"></div>
+    <input type="text" id="mint" readonly style="position:absolute;top:350px;left:5px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input>
+    </div>
+    
+    
+    <!--nieuwe slider-->
+    <div style="position:absolute;height:250px;top:300px;left:100px;">
+    <label>Neerslag</label><br><br>
+    <input type="text" id="maxp" readonly style=" width:30px;border:0; color:#f6931f; font-weight:bold;"></input>
+    <div id="slider-range1" style="position:absolute;height:250px;top:75px"></div>
+    <input type="text" id="minp" readonly style="position:absolute;top:350px;left:5px;border:0;width:30px;color:#f6931f; font-weight:bold;"></input>
+    </div>
+    
+
+    
+    <input type = "button" value="Confirm" onclick="Bounds()" style="position:absolute;top:700px;">
+    
+    
   </body>
 </html>
