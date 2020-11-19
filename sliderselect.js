@@ -3,17 +3,15 @@ var previoushighp=5000;
 var previouslowt=-45;
 var previoushight=45;
 
-function LowerBound(x) {
+function LowerBound(type,ui) {
     //temp of prec variabele mapping
-    switch (x) {
+    switch (type) {
         case "temp":
-            id="mint";
             bst=tgem;
             json=tmax_gem;
             previouslow=previouslowt;
             break;
         case "prec":
-            id="minp";
             bst=ptot;
             json=prectot;
             previouslow=previouslowp;
@@ -22,7 +20,7 @@ function LowerBound(x) {
     
     
     
-    var val = Number(document.getElementById(id).value);
+    var val = Number(ui.values[0]);
     //toevoegen van features bij verlagen minwaarde
     if (val < previouslow) {
         var features=new ol.format.GeoJSON().readFeatures(json);
@@ -38,40 +36,38 @@ function LowerBound(x) {
     else if (previouslow < val) {
         bst.getSource().getFeatures().forEach(function (feature) {
                 if ((feature.get('DN')) < val) {
-                    //just add feature
+                    //just remove feature
                     bst.getSource().removeFeature(feature);
                 }
                 
             })
             }
             
-    if (x=="temp") {
+    if (type=="temp") {
         previouslowt=val;       
     }
-    else if (x=="prec"){
+    else if (type=="prec"){
         previouslowp=val;
     }
 };
 
 
-function UpperBound(y) {   
+function UpperBound(type,ui) {   
     //temp of prec variabele mapping
-    switch (y) {
+    switch (type) {
         case "temp":
-            id="maxt";
             bst=tgem;
             json=tmax_gem;
             previoushigh=previoushight;
             break;
         case "prec":
-            id="maxp";
             bst=ptot;
             json=prectot;
             previoushigh=previoushighp;
             break;            
     }
     
-    var val = Number(document.getElementById(id).value);
+    var val = Number(ui.values[1]);
     //verwijderen van features bij verlagen maxwaarde
     if (val < previoushigh) {
         bst.getSource().getFeatures().forEach(function (feature) {
@@ -95,10 +91,10 @@ function UpperBound(y) {
             }
             
             
-    if (y=="temp") {
+    if (type=="temp") {
         previoushight=val;       
     }
-    else if (y=="prec"){
+    else if (type=="prec"){
         previoushighp=val;
     }
 }
@@ -111,11 +107,9 @@ function UpperBound(y) {
 
 
 
-function Bounds(){
-    LowerBound("prec");
-    UpperBound("prec");
-    LowerBound("temp");
-    UpperBound("temp");
+function Bounds(type,ui){
+    LowerBound(type,ui);
+    UpperBound(type,ui);
 }
 
 

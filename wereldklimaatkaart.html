@@ -113,47 +113,7 @@
     <script src="https://unpkg.com/ol-geocoder"></script>
 
     
-    <script>
-  $( function() {
-    $( "#slider-range1" ).slider({
-      min:0,
-      max:5000,
-      orientation: "vertical",
-      range: true,
-      values: [ 0, 5000 ],
-      slide: function( event, ui ) {
-        $( "#minp" ).val(ui.values[ 0 ]); 
-        $( "#maxp" ).val(ui.values[ 1 ]);
-      }
-    });
-    $( "#minp" ).val($( "#slider-range1" ).slider( "values", 0 ));
-    $( "#maxp" ).val($( "#slider-range1" ).slider( "values", 1 ));
-  } );
-  //update geojson bij verschuiven slider
-  //$( ".slider-range1" ).on( "slidechange", function(event,precBounds()) {} );
-  
-  
 
-  
-  $( function() {
-    $( "#slider-range2" ).slider({
-      min:-45,
-      max:45,
-      orientation: "vertical",
-      range: true,
-      values: [ -45, 45 ],
-      slide: function( event, ui ) {
-        $( "#mint" ).val(ui.values[ 0 ]); 
-        $( "#maxt" ).val(ui.values[ 1 ]);
-      }
-    });
-    $( "#mint" ).val($( "#slider-range2" ).slider( "values", 0 ));
-    $( "#maxt" ).val($( "#slider-range2" ).slider( "values", 1 ));
-  } );
-
-
-  
-  </script>
     
     
   </head>
@@ -167,7 +127,7 @@
               <input type="radio" id="ptot" name="radio" onclick="setMapType('ptot');" value="prec">  
               <label for="prec">Neerslag</label><br>
               <input type="radio" id="intersect" name="radio" onclick="setMapType('intersect');" value="is">  
-              <label for="is">Intersection</label>
+              <label for="is">Gecombineerde weergave</label>
         </div>
 
         <div id="map" class="map"></div> 
@@ -212,23 +172,98 @@
     <!--nieuwe slider--> 
     <div style="position:absolute;height:250px;top:300px;">
     <label>Temperatuur</label><br><br>
-    <input type="text" id="maxt" readonly style=" width: 25px;border:0; color:#f6931f; font-weight:bold;"></input>
+    <input type="text" id="maxt" style=" width: 25px;border:0; color:#f6931f; font-weight:bold;"></input>
     <div id="slider-range2" style="position:absolute;height:250px;top:75px;"></div>
-    <input type="text" id="mint" readonly style="position:absolute;top:350px;left:5px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input>
+    <input type="text" id="mint" style="position:absolute;top:350px;left:5px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input>
     </div>
     
     
     <!--nieuwe slider-->
     <div style="position:absolute;height:250px;top:300px;left:100px;">
     <label>Neerslag</label><br><br>
-    <input type="text" id="maxp" readonly style=" width:30px;border:0; color:#f6931f; font-weight:bold;"></input>
+    <input type="text" id="maxp" style=" width:30px;border:0; color:#f6931f; font-weight:bold;"></input>
     <div id="slider-range1" style="position:absolute;height:250px;top:75px"></div>
-    <input type="text" id="minp" readonly style="position:absolute;top:350px;left:5px;border:0;width:30px;color:#f6931f; font-weight:bold;"></input>
+    <input type="text" id="minp" style="position:absolute;top:350px;left:5px;border:0;width:30px;color:#f6931f; font-weight:bold;"></input>
     </div>
     
-
     
-    <input type = "button" value="Confirm" onclick="Bounds()" style="position:absolute;top:700px;">
+    
+    <!--<input type = "button" value="Confirm" onclick="Bounds()" style="position:absolute;top:700px;">-->
+    
+    
+    
+        <script>
+  $( function() {
+    $( "#slider-range1" ).slider({
+      min:0,
+      max:5000,
+      orientation: "vertical",
+      range: true,
+      values: [ 0, 5000 ],
+      slide: function( event, ui ) {
+        $( "#minp" ).val(ui.values[ 0 ]); 
+        $( "#maxp" ).val(ui.values[ 1 ]);
+        //Bounds(ui);
+      },
+      change:function(event,ui) {
+        Bounds("prec",ui);
+      }
+    });
+    $( "#minp" ).val($( "#slider-range1" ).slider( "values", 0 ));
+    $( "#maxp" ).val($( "#slider-range1" ).slider( "values", 1 ));
+  } );
+  //update geojson bij verschuiven slider
+  //$( ".slider-range1" ).on( "slidechange", function(event,precBounds()) {} );
+  
+  
+
+  
+  $( function() {
+    $( "#slider-range2" ).slider({
+      min:-45,
+      max:45,
+      orientation: "vertical",
+      range: true,
+      values: [ -45, 45 ],
+      slide: function( event, ui ) {
+        $( "#mint" ).val(ui.values[ 0 ]); 
+        $( "#maxt" ).val(ui.values[ 1 ]);
+      },
+      change:function(event,ui) {
+        Bounds("temp",ui);
+      }
+    });
+    $( "#mint" ).val($( "#slider-range2" ).slider( "values", 0 ));
+    $( "#maxt" ).val($( "#slider-range2" ).slider( "values", 1 ));
+  } );
+
+
+  $("#maxp").change(function() {
+    $("#slider-range1").slider('values',1,$(this).val());
+    });
+    
+  $("#minp").change(function() {
+    $("#slider-range1").slider('values',0,$(this).val());
+    });
+    
+    
+  $("#maxt").change(function() {
+    $("#slider-range2").slider('values',1,$(this).val());
+    });
+    
+  $("#mint").change(function() {
+    $("#slider-range2").slider('values',0,$(this).val());
+    });
+    
+    
+  
+  
+  </script>
+    
+    
+    
+    
+    
     
     
   </body>

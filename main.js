@@ -284,7 +284,7 @@ var displayFeatureInfoClick = function (pixel) {
       features.push(feature);}
       laagoud=layer;
     });
-    if (features.length >1) {
+    if (features.length >0) {
         var info = [];
         for (var i = 0, ii=features.length; i<ii;++i){
             info.push (features[i].get('DN'));
@@ -307,7 +307,7 @@ var displayFeatureInfo = function (pixel) {
       laagoud=layer;
     });    
     var container = document.getElementById('info');
-    if (features.length >1) {
+    if (features.length >0) {
       var info = []
       for (var i = 0, ii=features.length; i<ii;++i){
       info.push (features[i].get('DN'));
