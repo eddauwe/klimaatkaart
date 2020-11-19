@@ -97,23 +97,59 @@ function tempconverter(number){
 
 
 
-function precconverter(number){
-    //rood waarde
-    var r=0;       
-    //groen waarde
-    var g=0; 
-    //blauw waarde
-    var b;
-    const getal=number;
+function precconverter(number){    
+    var getal = number;
+    //rood waarde     
     switch (true){
         case (getal<200):
-            b=0;
+            r=100;
+            break;
+        case (getal<400):
+            r=50;
+            break;
+        case (getal<600):
+            r=25;
+            break;
+        case (getal<800):
+            r=5;
+            break;
+        default:
+            r=0;      
+    }   
+    //groen waarde   
+    switch (true){
+        case (getal<200):
+            g=105;
+            break;
+        case (getal<400):
+            g=105;
+            break;
+        case (getal<600):
+            g=80;
+            break;
+        case (getal<800):
+            g=50;
+            break;
+        default:
+            g=5;      
+    }
+    //blauw waarde
+    var b;
+    switch (true){
+        case (getal<200):
+            b=50;
             break;
         case (getal<400):
             b=100;
             break;
+        case (getal <600):
+            b=150;
+            break;
+        case (getal <800):    
+            b=200
+            break;
         default:
-            b=255;
+            b=250;
     }
     var color='rgb('+r+','+g+','+b+')';
     return color;
@@ -145,10 +181,10 @@ var tempstyleFunction = function (feature,resolution) {
 var precstyleFunction= function (feature,resolution){
     return new ol.style.Style({
         fill:new ol.style.Fill({color:precconverter(feature.get('DN'))}),
-        //stroke: new ol.style.Stroke({
-        //    color: tempconverter(feature.get('DN')),
-        //    width: 0
-        //    }),
+        stroke: new ol.style.Stroke({
+            color: precconverter(feature.get('DN')),
+            width: 0
+            }),
         text:new ol.style.Text({
             font: '12px Calibri,sans-serif',
             fill: new ol.style.Fill({
@@ -165,7 +201,11 @@ var precstyleFunction= function (feature,resolution){
 
 
 var standaardstijl = new ol.style.Style({
-    fill:new ol.style.Fill({color:"yellow"})
+    fill:new ol.style.Fill({color:"5500EE"}),
+    stroke: new ol.style.Stroke({
+            color: "5500EE",
+            width: 0
+            })
 })
 
 
@@ -183,16 +223,17 @@ var ptot=new ol.layer.Vector({
     opacity:0
 });
 
+
 var intersect=new ol.layer.Vector({
     name:'intersect',
-    source:tempsource,
+    source: new ol.source.Vector({}),
     style:standaardstijl,
     opacity:0  
 });
 
 
 var lagen=new ol.layer.Group({
-    layers:[osmlayer,tgem,ptot]
+    layers:[osmlayer,tgem,ptot,intersect]
 });
 
 
@@ -280,7 +321,7 @@ var displayFeatureInfoClick = function (pixel) {
   var features = [];
   var laagoud='';
   map.forEachFeatureAtPixel (pixel, function (feature,layer) {
-      if (layer!= laagoud){
+      if (layer!= laagoud && layer.get('name') != "intersect"){
       features.push(feature);}
       laagoud=layer;
     });
@@ -302,7 +343,7 @@ var displayFeatureInfo = function (pixel) {
   var features = [];
   var laagoud='';
   map.forEachFeatureAtPixel (pixel,function(feature,layer) {
-      if (layer!= laagoud){
+      if (layer!= laagoud && layer.get('name') != "intersect"){
       features.push(feature);}
       laagoud=layer;
     });    

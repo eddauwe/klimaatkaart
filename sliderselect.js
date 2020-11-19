@@ -110,6 +110,51 @@ function UpperBound(type,ui) {
 function Bounds(type,ui){
     LowerBound(type,ui);
     UpperBound(type,ui);
+    
+    
+    /*
+    //intersectie updaten
+    var tsource = tgem.getSource();
+    var tfeatures = tsource.getFeatures();
+    
+    var psource = ptot.getSource();
+    var pfeatures = psource.getFeatures();
+
+    //reset intersectie
+    intersect.getSource().clear();
+    arrayofgeomst=[];
+    arrayofgeomsp=[];
+    for (var i = 0, ii=tfeatures.length; i<ii;++i)
+    {geom=tfeatures[i].getGeometry();
+     arrayofgeomst.push(geom)}
+     
+    for (var i = 0, ii=pfeatures.length; i<ii;++i)
+    {geom=pfeatures[i].getGeometry();
+     arrayofgeomsp.push(geom)} 
+     
+     var geomst=new ol.Feature({
+         geometry:new ol.geom.GeometryCollection(arrayofgeomst),
+         name:"mijn temppolygoon"
+     });
+     
+    
+     var geomsp=new ol.Feature({
+         geometry:new ol.geom.GeometryCollection(arrayofgeomsp),
+         name:"mijn regenpolygoon"
+     });
+     
+     
+     //zet om naar turf geom
+     arrayofgeomst_turf=new ol.format.GeoJSON().writeFeatureObject(geomst);
+     arrayofgeomsp_turf=new ol.format.GeoJSON().writeFeatureObject(geomsp);
+
+    var gemenedeler = turf.intersect(arrayofgeomst_turf,arrayofgeomsp_turf);
+    
+    //zet om naar openlayers geom
+    kak=new ol.format.GeoJSON().readFeature(gemenedeler);
+    
+    intersect.getSource().addFeature(kak);*/
+
 }
 
 
