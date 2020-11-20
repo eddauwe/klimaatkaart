@@ -1,19 +1,15 @@
-var previouslowp = 0;
-var previoushighp=5000;
-var previouslowt=-45;
-var previoushight=45;
+var lowerboundprevp=0;
+var upperboundprevp=5000;
+var lowerboundprevt=-45;
+var upperboundprevt=45;
 
 function LowerBound(type,ui) {
     //temp of prec variabele mapping
     switch (type) {
         case "temp":
-            bst=tgem;
-            json=tmax_gem;
             previouslow=previouslowt;
             break;
         case "prec":
-            bst=ptot;
-            json=prectot;
             previouslow=previouslowp;
             break;            
     }
@@ -23,21 +19,21 @@ function LowerBound(type,ui) {
     var val = Number(ui.values[0]);
     //toevoegen van features bij verlagen minwaarde
     if (val < previouslow) {
-        var features=new ol.format.GeoJSON().readFeatures(json);
+        var features=new ol.format.GeoJSON().readFeatures(klimaatjson);
         features.forEach(function (feature) {
                 if ((feature.get('DN')) < previouslow && (feature.get('DN')) > val) {
                     //just add feature
-                    bst.getSource().addFeature(feature);
+                    klimaat.getSource().addFeature(feature);
                 }
                 
             })
             }
     //verwijderen van features bij verhogen minwaarde
     else if (previouslow < val) {
-        bst.getSource().getFeatures().forEach(function (feature) {
-                if ((feature.get('DN')) < val) {
+        klimdata.getSource().getFeatures().forEach(function (feature) {
+                if ((feature.get('DN_2')) < val) {
                     //just remove feature
-                    bst.getSource().removeFeature(feature);
+                    klimaat.getSource().removeFeature(feature);
                 }
                 
             })
@@ -56,13 +52,9 @@ function UpperBound(type,ui) {
     //temp of prec variabele mapping
     switch (type) {
         case "temp":
-            bst=tgem;
-            json=tmax_gem;
             previoushigh=previoushight;
             break;
         case "prec":
-            bst=ptot;
-            json=prectot;
             previoushigh=previoushighp;
             break;            
     }
@@ -70,21 +62,21 @@ function UpperBound(type,ui) {
     var val = Number(ui.values[1]);
     //verwijderen van features bij verlagen maxwaarde
     if (val < previoushigh) {
-        bst.getSource().getFeatures().forEach(function (feature) {
+        klimaat.getSource().getFeatures().forEach(function (feature) {
                 if ((feature.get('DN')) > val) {
                     //just remove feature
-                    bst.getSource().removeFeature(feature);
+                    klimaat.getSource().removeFeature(feature);
                 }
                 
             })
             }
     //toevoegen van features bij verhogen maxwaarde
     else if (previoushigh < val) {
-        var features=new ol.format.GeoJSON().readFeatures(json);
+        var features=new ol.format.GeoJSON().readFeatures(klimaatjson);
         features.forEach(function (feature) {
                 if ((feature.get('DN')) > previoushigh && (feature.get('DN')) < val) {
                     //just add feature
-                    bst.getSource().addFeature(feature);
+                    klimaat.getSource().addFeature(feature);
                 }
                 
             })
@@ -101,61 +93,135 @@ function UpperBound(type,ui) {
 
 
 
+//één laag
+function precBounds(ui){
+    var lowerbound = Number(ui.values[0]);
+    var upperbound = Number(ui.values[1]);
+    var lowt = $( "#mint" ).val();
+    var hight = $( "#maxt" ).val();
 
+    //LOWERBOUND verandering
+    
+    //verwijderen features bij verhogen lowerbound
+    if (lowerbound>lowerboundprevp)
+        {
+        klimdata.getSource().getFeatures().forEach(function (feature) {
+            if (feature.get('DN_2') < lowerbound) {
+                klimdata.getSource().removeFeature(feature);}
+        })
+        //update lowerboundprevp
+        lowerboundprevp=lowerbound
+        }
+    //toevoegen features bij verlagen lowerbound            
+    else if (lowerbound<lowerboundprevp)
+        {//add feature if within parameter boundaries
+        var features=new ol.format.GeoJSON().readFeatures(klimaat);
+        features.forEach(function(feature){
+            if (feature.get('DN_2') < lowerboundprevp && feature.get('DN_2') > lowerbound && feature.get('DN') > lowt && feature.get('DN') < hight) {
+                //just add feature
+                klimdata.getSource().addFeature(feature);}})
+        //update lowerboundprevp
+        lowerboundprevp=lowerbound
+        }
 
+    
+    //UPPERBOUND verandering
+    
+    //verwijderen features bij verlagen upperbound
+    if (upperbound<upperboundprevp)
+        {
+        klimdata.getSource().getFeatures().forEach(function (feature) {
+            if (feature.get('DN_2') > upperbound) {
+                klimdata.getSource().removeFeature(feature);}
+        })
+        //update upperboundprevp
+        upperboundprevp=upperbound;        
+        }
+    //toevoegen features bij verhogen upperbound
+    else if (upperbound>upperboundprevp)
+        {
+        //add feature if within parameter boundaries
+        var features=new ol.format.GeoJSON().readFeatures(klimaat);
+        features.forEach(function(feature){
+            if (feature.get('DN_2') < upperbound && feature.get('DN_2')>upperboundprevp && feature.get('DN') > lowt && feature.get('DN')< hight ) {
+                //just add feature
+                klimdata.getSource().addFeature(feature);}})    
+        //update upperboundprevp
+        upperboundprevp=upperbound;
+        }
+    
 
-
-
-
-function Bounds(type,ui){
-    LowerBound(type,ui);
-    UpperBound(type,ui);
     
     
-    /*
-    //intersectie updaten
-    var tsource = tgem.getSource();
-    var tfeatures = tsource.getFeatures();
     
-    var psource = ptot.getSource();
-    var pfeatures = psource.getFeatures();
+    } 
 
-    //reset intersectie
-    intersect.getSource().clear();
-    arrayofgeomst=[];
-    arrayofgeomsp=[];
-    for (var i = 0, ii=tfeatures.length; i<ii;++i)
-    {geom=tfeatures[i].getGeometry();
-     arrayofgeomst.push(geom)}
-     
-    for (var i = 0, ii=pfeatures.length; i<ii;++i)
-    {geom=pfeatures[i].getGeometry();
-     arrayofgeomsp.push(geom)} 
-     
-     var geomst=new ol.Feature({
-         geometry:new ol.geom.GeometryCollection(arrayofgeomst),
-         name:"mijn temppolygoon"
-     });
-     
-    
-     var geomsp=new ol.Feature({
-         geometry:new ol.geom.GeometryCollection(arrayofgeomsp),
-         name:"mijn regenpolygoon"
-     });
-     
-     
-     //zet om naar turf geom
-     arrayofgeomst_turf=new ol.format.GeoJSON().writeFeatureObject(geomst);
-     arrayofgeomsp_turf=new ol.format.GeoJSON().writeFeatureObject(geomsp);
 
-    var gemenedeler = turf.intersect(arrayofgeomst_turf,arrayofgeomsp_turf);
-    
-    //zet om naar openlayers geom
-    kak=new ol.format.GeoJSON().readFeature(gemenedeler);
-    
-    intersect.getSource().addFeature(kak);*/
 
-}
+
+
+function tempBounds(ui){
+    var lowerbound = Number(ui.values[0]);
+    var upperbound = Number(ui.values[1]);
+    var lowp = $( "#minp" ).val();
+    var highp = $( "#maxp" ).val();
+
+    //LOWERBOUND verandering
+    
+    //verwijderen features bij verhogen lowerbound
+    if (lowerbound>lowerboundprevp)
+        {
+        klimdata.getSource().getFeatures().forEach(function (feature) {
+            if (feature.get('DN') < lowerbound) {
+                klimdata.getSource().removeFeature(feature);}
+        })
+        //update lowerboundprevp
+        lowerboundprevt=lowerbound
+        }
+    //toevoegen features bij verlagen lowerbound            
+    else if (lowerbound<lowerboundprevt)
+        {//add feature if within parameter boundaries
+        var features=new ol.format.GeoJSON().readFeatures(klimaat);
+        features.forEach(function(feature){
+            if (feature.get('DN') < lowerboundprevt && feature.get('DN') > lowerbound && feature.get('DN_2') > lowp && feature.get('DN_2') < highp) {
+                //just add feature
+                klimdata.getSource().addFeature(feature);}})
+        //update lowerboundprevp
+        lowerboundprevt=lowerbound
+        }
+
+    
+    //UPPERBOUND verandering
+    
+    //verwijderen features bij verlagen upperbound
+    if (upperbound<upperboundprevt)
+        {
+        klimdata.getSource().getFeatures().forEach(function (feature) {
+            if (feature.get('DN') > upperbound) {
+                klimdata.getSource().removeFeature(feature);}
+        })
+        //update upperboundprevp
+        upperboundprevt=upperbound;        
+        }
+    //toevoegen features bij verhogen upperbound
+    else if (upperbound>upperboundprevt)
+        {
+        //add feature if within parameter boundaries
+        var features=new ol.format.GeoJSON().readFeatures(klimaat);
+        features.forEach(function(feature){
+            if (feature.get('DN') < upperbound && feature.get('DN')>upperboundprevt && feature.get('DN_2') > lowp && feature.get('DN_2')< highp ) {
+                //just add feature
+                klimdata.getSource().addFeature(feature);}})    
+        //update upperboundprevp
+        upperboundprevt=upperbound;
+        }
+    
+
+    
+    
+    
+    } 
+
 
 
 

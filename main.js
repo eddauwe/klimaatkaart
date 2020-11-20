@@ -36,11 +36,7 @@ source: new ol.source.ImageStatic({
 
 //geojson sources
 var tempsource = new ol.source.Vector({
-    features:(new ol.format.GeoJSON()).readFeatures(tmax_gem)
-});
-
-var precsource = new ol.source.Vector({
-    features:(new ol.format.GeoJSON()).readFeatures(prectot)
+    features:(new ol.format.GeoJSON()).readFeatures(klimaat)
 });
 
 
@@ -180,9 +176,9 @@ var tempstyleFunction = function (feature,resolution) {
 
 var precstyleFunction= function (feature,resolution){
     return new ol.style.Style({
-        fill:new ol.style.Fill({color:precconverter(feature.get('DN'))}),
+        fill:new ol.style.Fill({color:precconverter(feature.get('DN_2'))}),
         stroke: new ol.style.Stroke({
-            color: precconverter(feature.get('DN')),
+            color: precconverter(feature.get('DN_2')),
             width: 0
             }),
         text:new ol.style.Text({
@@ -209,42 +205,21 @@ var standaardstijl = new ol.style.Style({
 })
 
 
-var tgem=new ol.layer.Vector({
+var klimdata=new ol.layer.Vector({
     name:'tmax01',
     source: tempsource,
     style:tempstyleFunction,
     opacity:0.6
 });
 
-var ptot=new ol.layer.Vector({
-    name:'ptot',
-    source: precsource,
-    style:precstyleFunction,
-    opacity:0
-});
-
-
-var intersect=new ol.layer.Vector({
-    name:'intersect',
-    source: new ol.source.Vector({}),
-    style:standaardstijl,
-    opacity:0  
-});
-
 
 var lagen=new ol.layer.Group({
-    layers:[osmlayer,tgem,ptot,intersect]
+    layers:[osmlayer,klimdata]
 });
 
 
 function setMapType(newType){
-    map.getLayers().forEach(function(layer){
-        if (layer.get('name') == newType) {
-            layer.setOpacity(0.6);
-        }
-        else if (layer.get('name') != 'osmlayer')
-        {layer.setOpacity(0)}
-    })
+    klimdata.setStyle(newType);
 };
 
 
@@ -321,13 +296,15 @@ var displayFeatureInfoClick = function (pixel) {
   var features = [];
   var laagoud='';
   map.forEachFeatureAtPixel (pixel, function (feature,layer) {
-      if (layer!= laagoud && layer.get('name') != "intersect"){
+      if (layer!= laagoud){
       features.push(feature);}
       laagoud=layer;
     });
     if (features.length >0) {
         var info = [];
         for (var i = 0, ii=features.length; i<ii;++i){
+            info.push (features[i].get('DN_2'));
+            //work in progress
             info.push (features[i].get('DN'));
         }
         content.innerHTML = info.join (' mm <br>  ') + ' C';
@@ -343,7 +320,7 @@ var displayFeatureInfo = function (pixel) {
   var features = [];
   var laagoud='';
   map.forEachFeatureAtPixel (pixel,function(feature,layer) {
-      if (layer!= laagoud && layer.get('name') != "intersect"){
+      if (layer!= laagoud){
       features.push(feature);}
       laagoud=layer;
     });    
@@ -351,6 +328,8 @@ var displayFeatureInfo = function (pixel) {
     if (features.length >0) {
       var info = []
       for (var i = 0, ii=features.length; i<ii;++i){
+      info.push (features[i].get('DN_2'));
+      //work in progress
       info.push (features[i].get('DN'));
       } 
       container.innerHTML = info.join (' mm <br>  ') + ' C';

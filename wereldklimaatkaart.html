@@ -104,8 +104,7 @@
     
     
     <!--geojson object-->
-    <script src="tmax_gem_vector.geojson.js"></script>
-    <script src="prec_som_reclass.geojson.js"></script>
+    <script src="klimaatkaart.geojson.js"></script>
     <!--geocoder-->
     <link href="https://unpkg.com/ol-geocoder/dist/ol-geocoder.min.css" rel="stylesheet">
     
@@ -125,11 +124,11 @@
     <h1 style="text-align:center; font-size:20px;">Wereldklimaatkaart</h1>
     <div class="viewer">
         <div class="selector">
-              <input type="radio" id="tgem" checked="checked" name="radio" onclick="setMapType('tmax01');" value="temp">
+              <input type="radio" id="tgem" checked="checked" name="radio" onclick="setMapType(tempstyleFunction);" value="temp">
               <label for="temp">Temperatuur</label><br>
-              <input type="radio" id="ptot" name="radio" onclick="setMapType('ptot');" value="prec">  
+              <input type="radio" id="ptot" name="radio" onclick="setMapType(precstyleFunction);" value="prec">  
               <label for="prec">Neerslag</label><br>
-              <input type="radio" id="intersect" name="radio" onclick="setMapType('intersect');" value="is">  
+              <input type="radio" id="intersect" name="radio" onclick="setMapType(standaardstijl);" value="is">  
               <label for="is">Gecombineerde weergave</label>
         </div>
 
@@ -175,18 +174,18 @@
     <!--nieuwe slider--> 
     <div style="position:absolute;height:250px;top:300px;">
     <label>Temperatuur</label><br><br>
-    <input type="text" id="maxt" style=" width: 25px;border:0; color:#f6931f; font-weight:bold;"></input>
+    <input type="text" id="maxt" style=" width: 25px;border:0; color:#f6931f; font-weight:bold;">celsius</input>
     <div id="slider-range2" style="position:absolute;height:250px;top:75px;"></div>
-    <input type="text" id="mint" style="position:absolute;top:350px;left:5px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input>
+    <input type="text" id="mint" style="position:absolute;top:350px;left:0px;border:0;width:25px;color:#f6931f; font-weight:bold;"><label style="position:absolute;top:348px;left:33px;">celsius</label></input>
     </div>
     
     
     <!--nieuwe slider-->
     <div style="position:absolute;height:250px;top:300px;left:100px;">
     <label>Neerslag</label><br><br>
-    <input type="text" id="maxp" style=" width:30px;border:0; color:#f6931f; font-weight:bold;"></input>
+    <input type="text" id="maxp" style=" width:30px;border:0; color:#f6931f; font-weight:bold;">mm</input>
     <div id="slider-range1" style="position:absolute;height:250px;top:75px"></div>
-    <input type="text" id="minp" style="position:absolute;top:350px;left:5px;border:0;width:30px;color:#f6931f; font-weight:bold;"></input>
+    <input type="text" id="minp" style="position:absolute;top:350px;left:0px;border:0;width:30px;color:#f6931f; font-weight:bold;"><label style="position:absolute;top:348px;left:33px;">mm</label></input>
     </div>
     
     
@@ -209,7 +208,7 @@
         //Bounds(ui);
       },
       change:function(event,ui) {
-        Bounds("prec",ui);
+        precBounds(ui);
       }
     });
     $( "#minp" ).val($( "#slider-range1" ).slider( "values", 0 ));
@@ -233,7 +232,7 @@
         $( "#maxt" ).val(ui.values[ 1 ]);
       },
       change:function(event,ui) {
-        Bounds("temp",ui);
+        tempBounds(ui);
       }
     });
     $( "#mint" ).val($( "#slider-range2" ).slider( "values", 0 ));
