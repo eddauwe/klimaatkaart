@@ -169,7 +169,7 @@ function tempBounds(ui){
     //LOWERBOUND verandering
     
     //verwijderen features bij verhogen lowerbound
-    if (lowerbound>lowerboundprevp)
+    if (lowerbound>lowerboundprevt)
         {
         klimdata.getSource().getFeatures().forEach(function (feature) {
             if (feature.get('DN') < lowerbound) {
