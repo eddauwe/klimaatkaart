@@ -1,3 +1,4 @@
 *.geojson.js filter=lfs diff=lfs merge=lfs -text
 klimaatkaart.geojson.js filter=lfs diff=lfs merge=lfs -text
 klimaatkaart.geojson filter=lfs diff=lfs merge=lfs -text
+.geojson.js filter=lfs diff=lfs merge=lfs -text
