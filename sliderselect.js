@@ -117,7 +117,7 @@ function precBounds(ui){
         {//add feature if within parameter boundaries
         var features=new ol.format.GeoJSON().readFeatures(klimaat);
         features.forEach(function(feature){
-            if (feature.get('DN_2') < lowerboundprevp && feature.get('DN_2') > lowerbound && feature.get('DN') > lowt && feature.get('DN') < hight) {
+            if (feature.get('DN_2') <= lowerboundprevp && feature.get('DN_2') >= lowerbound && feature.get('DN') >= lowt && feature.get('DN') <= hight) {
                 //just add feature
                 klimdata.getSource().addFeature(feature);}})
         //update lowerboundprevp
@@ -143,7 +143,7 @@ function precBounds(ui){
         //add feature if within parameter boundaries
         var features=new ol.format.GeoJSON().readFeatures(klimaat);
         features.forEach(function(feature){
-            if (feature.get('DN_2') < upperbound && feature.get('DN_2')>upperboundprevp && feature.get('DN') > lowt && feature.get('DN')< hight ) {
+            if (feature.get('DN_2') <= upperbound && feature.get('DN_2')>=upperboundprevp && feature.get('DN') >= lowt && feature.get('DN')<= hight ) {
                 //just add feature
                 klimdata.getSource().addFeature(feature);}})    
         //update upperboundprevp
@@ -183,7 +183,7 @@ function tempBounds(ui){
         {//add feature if within parameter boundaries
         var features=new ol.format.GeoJSON().readFeatures(klimaat);
         features.forEach(function(feature){
-            if (feature.get('DN') < lowerboundprevt && feature.get('DN') > lowerbound && feature.get('DN_2') > lowp && feature.get('DN_2') < highp) {
+            if (feature.get('DN') <= lowerboundprevt && feature.get('DN') >= lowerbound && feature.get('DN_2') >= lowp && feature.get('DN_2') <= highp) {
                 //just add feature
                 klimdata.getSource().addFeature(feature);}})
         //update lowerboundprevp
@@ -209,7 +209,7 @@ function tempBounds(ui){
         //add feature if within parameter boundaries
         var features=new ol.format.GeoJSON().readFeatures(klimaat);
         features.forEach(function(feature){
-            if (feature.get('DN') < upperbound && feature.get('DN')>upperboundprevt && feature.get('DN_2') > lowp && feature.get('DN_2')< highp ) {
+            if (feature.get('DN') <= upperbound && feature.get('DN')>=upperboundprevt && feature.get('DN_2') >= lowp && feature.get('DN_2')<= highp ) {
                 //just add feature
                 klimdata.getSource().addFeature(feature);}})    
         //update upperboundprevp
@@ -221,6 +221,26 @@ function tempBounds(ui){
     
     
     } 
+    
+    
+    
+function klimaatfilter(ui){
+    var lowt = $( "#mint" ).val();
+    var hight = $( "#maxt" ).val();  
+    var lowp = $( "#minp" ).val();
+    var highp = $( "#maxp" ).val();  
+    var layerstyle=klimdata.getStyle()
+    klimdata.getSource().getFeatures().forEach(function (feature){
+        if (feature.get('DN')<=hight && feature.get('DN')>=lowt && feature.get('DN_2')<=highp && feature.get('DN_2')>=lowp){           
+            feature.setStyle(layerstyle);
+        }
+        else {
+            feature.setStyle(new ol.style.Style({}));
+        }     
+    })
+    //klimdata.redraw();
+    //klimdata.getSource().refresh();
+}
 
 
 

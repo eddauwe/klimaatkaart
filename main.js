@@ -10,8 +10,8 @@ source: new ol.source.OSM({
 });
 
 
-
-
+var unit = '°C';
+var parameters=['DN','DN_2'];
 
 
 var projection = new ol.proj.Projection({
@@ -218,9 +218,34 @@ var lagen=new ol.layer.Group({
 });
 
 
-function setMapType(newType){
+function setMapTypeT(newType){
     klimdata.setStyle(newType);
+    var lowt = $( "#mint" ).val();
+    var hight = $( "#maxt" ).val();  
+    var lowp = $( "#minp" ).val();
+    var highp = $( "#maxp" ).val();  
+    klimdata.getSource().getFeatures().forEach(function (feature){
+        if (feature.get('DN')<=hight && feature.get('DN')>=lowt && feature.get('DN_2')<=highp && feature.get('DN_2')>=lowp){           
+            feature.setStyle();
+        }
+    })
+    unit = '°C';
 };
+
+function setMapTypeP(newType){
+    klimdata.setStyle(newType); 
+    var lowt = $( "#mint" ).val();
+    var hight = $( "#maxt" ).val();  
+    var lowp = $( "#minp" ).val();
+    var highp = $( "#maxp" ).val();  
+    klimdata.getSource().getFeatures().forEach(function (feature){
+        if (feature.get('DN')<=hight && feature.get('DN')>=lowt && feature.get('DN_2')<=highp && feature.get('DN_2')>=lowp){           
+            feature.setStyle();
+        }
+    })
+    unit = 'mm';
+};
+
 
 
 
@@ -302,13 +327,16 @@ var displayFeatureInfoClick = function (pixel) {
     });
     if (features.length >0) {
         var info = [];
-        for (var i = 0, ii=features.length; i<ii;++i){
-            info.push (features[i].get('DN_2'));
+            info.push (features[0].get('DN'));
+            info.push (features[0].get('DN_2'));
             //work in progress
-            info.push (features[i].get('DN'));
-        }
-        content.innerHTML = info.join (' mm <br>  ') + ' C';
+            /*
+            info.push(features[0].get(klimdata.getStyle().name));
+            */
+
+        //content.innerHTML = info.join (' mm <br>  ') + ' C'+'<br>';
         //content.innerHTML = feature.get('DN')-50 + ' - ' +feature.get('DN') + ' mm';
+        content.innerHTML = info[0] + ' '+ unit;
     }
     else {
         content.innerHTML = 'geen waarde';
@@ -326,13 +354,10 @@ var displayFeatureInfo = function (pixel) {
     });    
     var container = document.getElementById('info');
     if (features.length >0) {
-      var info = []
-      for (var i = 0, ii=features.length; i<ii;++i){
-      info.push (features[i].get('DN_2'));
-      //work in progress
-      info.push (features[i].get('DN'));
-      } 
-      container.innerHTML = info.join (' mm <br>  ') + ' C';
+      container.innerHTML='&nbsp;';
+      for (var i = 0, ii=parameters.length; i<ii;++i){
+      container.innerHTML += features[0].get(parameters[i]) + ' ' + document.getElementById(parameters[i]).value + '<br>'; 
+      }
     }
     else {
       container.innerHTML = '&nbsp;';
