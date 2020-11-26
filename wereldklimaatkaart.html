@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!--solve favicon.ico error-->
+    <link rel="shortcut icon" href="">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css" type="text/css">
     <style>  
     
@@ -107,7 +109,7 @@
     
     
     <!--geojson object-->
-    <script src="klimaatkaart.geojson.js"></script>
+    <script src="testdata.geojson.js"></script>
     <!--geocoder-->
     <link href="https://unpkg.com/ol-geocoder/dist/ol-geocoder.min.css" rel="stylesheet">
     
@@ -117,8 +119,8 @@
     <!--turf nodig voor intersectie-->
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@5/turf.min.js"></script>
 
-    
-
+    <!--geojson vt-->
+    <script src="https://unpkg.com/geojson-vt@3.2.0/geojson-vt.js"></script>
     
     
   </head>
@@ -132,17 +134,17 @@
         
         
         <div class="selector">
-              <input type="radio" id="DN" checked="checked" name="radio" onclick="setMapTypeT(tempstyleFunction);" value="C">
+              <input type="radio" id="tgem" checked="checked" name="radio" onclick="setMapType('tgem',tgemstyleFunction);" value="C">
               <label for="temp">Gemiddelde jaarlijkse temperatuur</label><br>
-              <input type="radio" id="DN_2" name="radio" onclick="setMapTypeP(precstyleFunction);" value="mm">  
+              <input type="radio" id="tgem" name="radio" onclick="setMapType('tgem',standaardstijl);" value="mm">  
               <label for="prec">Gemiddelde jaarlijkse totaalneerslag</label><br>
-              <input type="radio" id="intersect" name="radio" onclick="setMapTypeT(standaardstijl);" value="C">  
+              <input type="radio" id="tzomer" name="radio" onclick="setMapType('tzomer',tzomerstyleFunction);" value="C">  
               <label for="is">Gemiddelde temperatuur zomer</label><br>
-              <input type="radio" id="intersect" name="radio" onclick="setMapTypeT(standaardstijl);" value="C">  
+              <input type="radio" id="twinter" name="radio" onclick="setMapType('twinter',twinterstyleFunction);" value="C">  
               <label for="is">Gemiddelde temperatuur winter</label><br>
-              <input type="radio" id="intersect" name="radio" onclick="setMapTypeP(standaardstijl);" value="mm">  
+              <input type="radio" id="tgem" name="radio" onclick="setMapType('tgem',standaardstijl);" value="mm">  
               <label for="is">Gemiddelde totale neerslag zomer</label><br>
-              <input type="radio" id="intersect" name="radio" onclick="setMapTypeP(standaardstijl);" value="mm">  
+              <input type="radio" id="tgem" name="radio" onclick="setMapType('tgem',standaardstijl);" value="mm">  
               <label for="is">Gemiddelde totale neerslag winter</label>             
         </div>
      
@@ -205,16 +207,16 @@
     <div style="position:fixed;height:100px;top:390px;right:0px;width:180px;background-color:green"><label style="font-size:12px;">Seizoensgemiddelden temperatuur</label>    
         <div style="position:absolute;height:100px;top:20px;left:0px;background-color:yellow">
             <label style="font-size:10px;">Zomer</label><br>
-            <label style="font-size:8px;">max</label><input type="text" id="maxt" style="position:relative;top:0px;width: 25px;border:0; color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;bottom:0px;font-size:10px;">C</label>
+            <label style="font-size:8px;">max</label><input type="text" id="maxtzomer" style="position:relative;top:0px;width: 25px;border:0; color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;bottom:0px;font-size:10px;">C</label>
             <div id="slider-range3" style="position:relative;height:100px;top:10px;"></div>    
-            <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="mint" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">C</label>
+            <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="mintzomer" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">C</label>
         </div>
         
         <div style="position:absolute;height:100px;top:20px;left:100px;background-color:yellow">
             <label style="font-size:10px;">Winter</label><br>
-            <label style="font-size:8px;">max</label><input type="text" id="maxp" style="position:relative;top:0px;width: 25px;border:0; color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;bottom:0px;font-size:10px;">C</label>
+            <label style="font-size:8px;">max</label><input type="text" id="maxtwinter" style="position:relative;top:0px;width: 25px;border:0; color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;bottom:0px;font-size:10px;">C</label>
             <div id="slider-range4" style="position:relative;height:100px;top:10px;"></div>    
-            <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="minp" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">C</label>
+            <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="mintwinter" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">C</label>
         </div>           
     </div>    
     
@@ -303,16 +305,16 @@
       range: true,
       values: [ 0, 5000 ],
       slide: function( event, ui ) {
-        $( "#minp" ).val(ui.values[ 0 ]); 
-        $( "#maxp" ).val(ui.values[ 1 ]);
+        $( "#mintzomer" ).val(ui.values[ 0 ]); 
+        $( "#maxtzomer" ).val(ui.values[ 1 ]);
         //Bounds(ui);
       },
       change:function(event,ui) {
-        precBounds(ui);
+        klimaatfilter(ui);
       }
     });
-    $( "#minp" ).val($( "#slider-range3" ).slider( "values", 0 ));
-    $( "#maxp" ).val($( "#slider-range3" ).slider( "values", 1 ));
+    $( "#mintzomer" ).val($( "#slider-range3" ).slider( "values", 0 ));
+    $( "#maxtzomer" ).val($( "#slider-range3" ).slider( "values", 1 ));
   } );
   
   
@@ -328,16 +330,16 @@
       range: true,
       values: [ 0, 5000 ],
       slide: function( event, ui ) {
-        $( "#minp" ).val(ui.values[ 0 ]); 
-        $( "#maxp" ).val(ui.values[ 1 ]);
+        $( "#mintwinter" ).val(ui.values[ 0 ]); 
+        $( "#maxtwinter" ).val(ui.values[ 1 ]);
         //Bounds(ui);
       },
       change:function(event,ui) {
-        precBounds(ui);
+        klimaatfilter(ui);
       }
     });
-    $( "#minp" ).val($( "#slider-range4" ).slider( "values", 0 ));
-    $( "#maxp" ).val($( "#slider-range4" ).slider( "values", 1 ));
+    $( "#mintwinter" ).val($( "#slider-range4" ).slider( "values", 0 ));
+    $( "#maxtwinter" ).val($( "#slider-range4" ).slider( "values", 1 ));
   } );
   
   
@@ -355,7 +357,7 @@
         //Bounds(ui);
       },
       change:function(event,ui) {
-        precBounds(ui);
+        klimaatfilter(ui);
       }
     });
     $( "#minp" ).val($( "#slider-range5" ).slider( "values", 0 ));
@@ -378,7 +380,7 @@
         //Bounds(ui);
       },
       change:function(event,ui) {
-        precBounds(ui);
+        klimaatfilter(ui);
       }
     });
     $( "#minp" ).val($( "#slider-range6" ).slider( "values", 0 ));
@@ -415,6 +417,32 @@
     {$("#slider-range2").slider('values',0,$(this).val());}
     else {alert("Gelieve een geldig bereik te kiezen, idioot!");}
     });
+    
+  $("#maxtzomer").change(function() {
+    if (parseInt($("#maxtzomer").val()) >= parseInt($("#mintzomer").val()))
+    {$("#slider-range3").slider('values',1,$(this).val());}
+    else {alert("Gelieve een geldig bereik te kiezen, idioot!");}
+    });
+    
+  $("#mintzomer").change(function() {
+    if (parseInt($("#maxtzomer").val()) >= parseInt($("#mintzomer").val()))
+    {$("#slider-range3").slider('values',0,$(this).val());}
+    else {alert("Gelieve een geldig bereik te kiezen, idioot!");}
+    });    
+    
+    
+  $("#maxtwinter").change(function() {
+    if (parseInt($("#maxtwinter").val()) >= parseInt($("#mintwinter").val()))
+    {$("#slider-range4").slider('values',1,$(this).val());}
+    else {alert("Gelieve een geldig bereik te kiezen, idioot!");}
+    });
+    
+  $("#mintwinter").change(function() {
+    if (parseInt($("#maxtwinter").val()) >= parseInt($("#mintwinter").val()))
+    {$("#slider-range4").slider('values',0,$(this).val());}
+    else {alert("Gelieve een geldig bereik te kiezen, idioot!");}
+    });    
+    
     
     
   

@@ -227,11 +227,20 @@ function tempBounds(ui){
 function klimaatfilter(ui){
     var lowt = $( "#mint" ).val();
     var hight = $( "#maxt" ).val();  
-    var lowp = $( "#minp" ).val();
-    var highp = $( "#maxp" ).val();  
+    //var lowp = $( "#minp" ).val();
+    //var highp = $( "#maxp" ).val();  
+    var lowtzomer=$( "#mintzomer" ).val();
+    var hightzomer=$( "#maxtzomer" ).val();
+    var lowtwinter=$( "#mintwinter" ).val();
+    var hightwinter=$( "#maxtwinter" ).val();
+    
+    
+    
     var layerstyle=klimdata.getStyle()
     klimdata.getSource().getFeatures().forEach(function (feature){
-        if (feature.get('DN')<=hight && feature.get('DN')>=lowt && feature.get('DN_2')<=highp && feature.get('DN_2')>=lowp){           
+        if (feature.get('tgem')<hight && feature.get('tgem')>=lowt 
+            && feature.get('tzomer')<hightzomer && feature.get('tzomer')>=lowtzomer
+            && feature.get('twinter')<hightwinter && feature.get('twinter')>=lowtwinter){          
             feature.setStyle(layerstyle);
         }
         else {
