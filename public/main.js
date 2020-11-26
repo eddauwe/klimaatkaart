@@ -284,16 +284,16 @@ var standaardstijl = new ol.style.Style({
 
 
 
-var klimdata=new ol.layer.Vector({
+/*var klimdata=new ol.layer.Vector({
     name:'tmax01',
     source: tempsource,
     style:tgemstyleFunction,
     opacity:0.6
 });
-
+*/
 
 var lagen=new ol.layer.Group({
-    layers:[osmlayer,klimdata]
+    layers:[osmlayer]
 });
 
 
@@ -367,7 +367,7 @@ view: new ol.View({
 
 
 
-/*
+
 // Converts geojson-vt data to GeoJSON
 var replacer = function (key, value) {
   if (value.geometry) {
@@ -461,7 +461,7 @@ fetch(url)
     map.addLayer(klimdata);
   });
 
-*/
+
 
 
 
