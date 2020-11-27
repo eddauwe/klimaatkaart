@@ -224,11 +224,11 @@ var twinterstyleFunction = function (feature,resolution) {
 
 
 
-var precstyleFunction= function (feature,resolution){
+var ptotstyleFunction= function (feature,resolution){
     return new ol.style.Style({
-        fill:new ol.style.Fill({color:precconverter(feature.get('DN_2'))}),
+        fill:new ol.style.Fill({color:precconverter(feature.get('ptot'))}),
         stroke: new ol.style.Stroke({
-            color: precconverter(feature.get('DN_2')),
+            color: precconverter(feature.get('ptot')),
             width: 0
             }),
         text:new ol.style.Text({
@@ -240,10 +240,56 @@ var precstyleFunction= function (feature,resolution){
                 color:'#fff',
                 width:3
                 }),
-            text:feature.get(toString('DN'))             
+            text:feature.get(toString('ptot'))             
             })          
     })
 }
+
+var pzomerstyleFunction= function (feature,resolution){
+    return new ol.style.Style({
+        fill:new ol.style.Fill({color:precconverter(feature.get('pzomer'))}),
+        stroke: new ol.style.Stroke({
+            color: precconverter(feature.get('pzomer')),
+            width: 0
+            }),
+        text:new ol.style.Text({
+            font: '12px Calibri,sans-serif',
+            fill: new ol.style.Fill({
+                color:'#000'
+            }),
+            stroke: new ol.style.Stroke({
+                color:'#fff',
+                width:3
+                }),
+            text:feature.get(toString('pzomer'))             
+            })          
+    })
+}
+
+
+
+
+var pwinterstyleFunction= function (feature,resolution){
+    return new ol.style.Style({
+        fill:new ol.style.Fill({color:precconverter(feature.get('pwinter'))}),
+        stroke: new ol.style.Stroke({
+            color: precconverter(feature.get('pwinter')),
+            width: 0
+            }),
+        text:new ol.style.Text({
+            font: '12px Calibri,sans-serif',
+            fill: new ol.style.Fill({
+                color:'#000'
+            }),
+            stroke: new ol.style.Stroke({
+                color:'#fff',
+                width:3
+                }),
+            text:feature.get(toString('pwinter'))             
+            })          
+    })
+}
+
 
 
 var standaardstijl = new ol.style.Style({
@@ -253,31 +299,6 @@ var standaardstijl = new ol.style.Style({
             width: 0
             })
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -303,16 +324,25 @@ function setMapType(newType,style){
     unit=parameters[newType];
     var lowt = $( "#mint" ).val();
     var hight = $( "#maxt" ).val();  
-    //var lowp = $( "#minp" ).val();
-    //var highp = $( "#maxp" ).val();  
+    var lowp = $( "#minp" ).val();
+    var highp = $( "#maxp" ).val();  
     var lowtzomer=$( "#mintzomer" ).val();
     var hightzomer=$( "#maxtzomer" ).val();
     var lowtwinter=$( "#mintwinter" ).val();
     var hightwinter=$( "#maxtwinter" ).val();
+    var lowpzomer=$( "#minpzomer" ).val();
+    var highpzomer=$( "#maxpzomer" ).val();
+    var lowpwinter=$( "#mintwinter" ).val();
+    var highpwinter=$( "#maxpwinter" ).val();
+    
     klimdata.getSource().getFeatures().forEach(function (feature){
         if (feature.get('tgem')<=hight && feature.get('tgem')>=lowt 
             && feature.get('tzomer')<=hightzomer && feature.get('tzomer')>=lowtzomer
-            && feature.get('twinter')<=hightwinter && feature.get('twinter')>=lowtwinter){           
+            && feature.get('twinter')<=hightwinter && feature.get('twinter')>=lowtwinter
+            && feature.get('ptot')<=highp && feature.get('ptot')>=lowp
+            && feature.get('pzomer')<=highpzomer && feature.get('pzomer')>=lowpzomer
+            && feature.get('pwinter')<=highpwinter && feature.get('pwinter')>=lowpwinter
+            ){           
             feature.setStyle();
         }
     })
@@ -365,134 +395,6 @@ view: new ol.View({
 });
 
 
-
-
-/*
-// Converts geojson-vt data to GeoJSON
-var replacer = function (key, value) {
-  if (value.geometry) {
-    var type;
-    var rawType = value.type;
-    var geometry = value.geometry;
-
-    if (rawType === 1) {
-      type = 'MultiPoint';
-      if (geometry.length == 1) {
-        type = 'Point';
-        geometry = geometry[0];
-      }
-    } else if (rawType === 2) {
-      type = 'MultiLineString';
-      if (geometry.length == 1) {
-        type = 'LineString';
-        geometry = geometry[0];
-      }
-    } else if (rawType === 3) {
-      type = 'Polygon';
-      if (geometry.length > 1) {
-        type = 'MultiPolygon';
-        geometry = [geometry];
-      }
-    }
-
-    return {
-      'type': 'Feature',
-      'geometry': {
-        'type': type,
-        'coordinates': geometry,
-      },
-      'properties': value.tags,
-    };
-  } else {
-    return value;
-  }
-};
-
-var url = 'testdata.geojson';
-fetch(url)
-  .then(function (response) {
-    return response.json();
-  })
-  .then(function (json) {
-    var tileIndex = geojsonvt(json, {
-      extent: 4096,
-      debug: 1,
-    });
-    var format = new ol.format.GeoJSON({
-      // Data returned from geojson-vt is in tile pixel units
-      dataProjection: new ol.proj.Projection({
-        code: 'TILE_PIXELS',
-        units: 'tile-pixels',
-        extent: [0, 0, 4096, 4096],
-      }),
-    });
-    var vectorSource = new ol.source.VectorTileSource({
-      tileUrlFunction: function (tileCoord) {
-        // Use the tile coordinate as a pseudo URL for caching purposes
-        return ol.JSON.stringify(tileCoord);
-      },
-      tileLoadFunction: function (tile, url) {
-        var tileCoord = ol.JSON.parse(url);
-        var data = tileIndex.getTile(
-          tileCoord[0],
-          tileCoord[1],
-          tileCoord[2]
-        );
-        var geojson = ol.JSON.stringify(
-          {
-            type: 'FeatureCollection',
-            features: data ? data.features : [],
-          },
-          replacer
-        );
-        var features = ol.format.readFeatures(geojson, {
-          extent: vectorSource.getTileGrid().getTileCoordExtent(tileCoord),
-          featureProjection: map.getView().getProjection(),
-        });
-        ol.tile.setFeatures(features);
-      },
-    });
-    var klimdata = new ol.vector.VectorTileLayer({
-      name:'tmax01',
-      source: vectorSource,
-      style:tgemstyleFunction,
-      opacity:0.6
-    });
-    map.addLayer(klimdata);
-  });
-
-*/
-
-
-
-
-
-
-
-
-
-
-/*var displayFeatureInfo = function (pixel) {
-    //indien er geen feature is geef geen waarde terug
-    
-    
-    map.forEachFeatureAtPixel(pixel,function(feature,layer)
-    {
-    var info=document.getElementById('info');
-    if (feature && layer.get('name')=='tmax01') {
-        info.innerHTML='Temperatuur: '+feature.get('DN')+ ' °C';
-    }
-    else if (feature && layer.get('name')=='ptot'){
-        info.innerHTML='Neerslag: '+feature.get('DN')+ ' mm';
-    }
-     else {
-        info.innerHTML = '&nbsp;';
-    }
-    }
-    
-    
-)
-}*/
 
 var displayFeatureInfoClick = function (pixel) {
   var features = [];
