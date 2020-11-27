@@ -2,6 +2,7 @@
 
 
 var osmlayer=new ol.layer.Tile({
+name:'osmlayer',
 className:'bw',
 source: new ol.source.OSM({
     
@@ -9,8 +10,9 @@ source: new ol.source.OSM({
 });
 
 
-
-
+var unit = '°C';
+var parameter = 'tgem';
+var parameters={'tgem':'°C','tzomer':'°C','twinter':'°C'};
 
 
 var projection = new ol.proj.Projection({
@@ -35,11 +37,7 @@ source: new ol.source.ImageStatic({
 
 //geojson sources
 var tempsource = new ol.source.Vector({
-    features:(new ol.format.GeoJSON()).readFeatures(tmax_gem)
-});
-
-var precsource = new ol.source.Vector({
-    features:(new ol.format.GeoJSON()).readFeatures(prectot)
+    features:(new ol.format.GeoJSON()).readFeatures(klimaat)
 });
 
 
@@ -96,23 +94,59 @@ function tempconverter(number){
 
 
 
-function precconverter(number){
-    //rood waarde
-    var r=0;       
-    //groen waarde
-    var g=0; 
-    //blauw waarde
-    var b;
-    const getal=number;
+function precconverter(number){    
+    var getal = number;
+    //rood waarde     
     switch (true){
         case (getal<200):
-            b=0;
+            r=100;
+            break;
+        case (getal<400):
+            r=50;
+            break;
+        case (getal<600):
+            r=25;
+            break;
+        case (getal<800):
+            r=5;
+            break;
+        default:
+            r=0;      
+    }   
+    //groen waarde   
+    switch (true){
+        case (getal<200):
+            g=105;
+            break;
+        case (getal<400):
+            g=105;
+            break;
+        case (getal<600):
+            g=80;
+            break;
+        case (getal<800):
+            g=50;
+            break;
+        default:
+            g=5;      
+    }
+    //blauw waarde
+    var b;
+    switch (true){
+        case (getal<200):
+            b=50;
             break;
         case (getal<400):
             b=100;
             break;
+        case (getal <600):
+            b=150;
+            break;
+        case (getal <800):    
+            b=200
+            break;
         default:
-            b=255;
+            b=250;
     }
     var color='rgb('+r+','+g+','+b+')';
     return color;
@@ -120,11 +154,11 @@ function precconverter(number){
 
 
 // style functie
-var tempstyleFunction = function (feature,resolution) {
+var tgemstyleFunction = function (feature,resolution) {
     return new ol.style.Style({
-            fill:new ol.style.Fill ({color:tempconverter(feature.get('DN'))}),
+            fill:new ol.style.Fill ({color:tempconverter(feature.get('tgem'))}),
             stroke: new ol.style.Stroke({
-                color: tempconverter(feature.get('DN')),
+                color: tempconverter(feature.get('tgem')),
                 width: 0
                 }),
             text:new ol.style.Text({
@@ -136,18 +170,67 @@ var tempstyleFunction = function (feature,resolution) {
                     color:'#fff',
                     width:3
                     }),
-                text:feature.get(toString('DN'))             
+                text:feature.get(toString('tgem'))             
             })              
         });
 };
 
+// style functie
+var tzomerstyleFunction = function (feature,resolution) {
+    return new ol.style.Style({
+            fill:new ol.style.Fill ({color:tempconverter(feature.get('tzomer'))}),
+            stroke: new ol.style.Stroke({
+                color: tempconverter(feature.get('tzomer')),
+                width: 0
+                }),
+            text:new ol.style.Text({
+                font: '12px Calibri,sans-serif',
+                fill: new ol.style.Fill({
+                    color:'#000'
+                }),
+                stroke: new ol.style.Stroke({
+                    color:'#fff',
+                    width:3
+                    }),
+                text:feature.get(toString('tzomer'))             
+            })              
+        });
+};
+
+
+
+
+// style functie
+var twinterstyleFunction = function (feature,resolution) {
+    return new ol.style.Style({
+            fill:new ol.style.Fill ({color:tempconverter(feature.get('twinter'))}),
+            stroke: new ol.style.Stroke({
+                color: tempconverter(feature.get('twinter')),
+                width: 0
+                }),
+            text:new ol.style.Text({
+                font: '12px Calibri,sans-serif',
+                fill: new ol.style.Fill({
+                    color:'#000'
+                }),
+                stroke: new ol.style.Stroke({
+                    color:'#fff',
+                    width:3
+                    }),
+                text:feature.get(toString('twinter'))             
+            })              
+        });
+};
+
+
+
 var precstyleFunction= function (feature,resolution){
     return new ol.style.Style({
-        fill:new ol.style.Fill({color:precconverter(feature.get('DN'))}),
-        //stroke: new ol.style.Stroke({
-        //    color: tempconverter(feature.get('DN')),
-        //    width: 0
-        //    }),
+        fill:new ol.style.Fill({color:precconverter(feature.get('DN_2'))}),
+        stroke: new ol.style.Stroke({
+            color: precconverter(feature.get('DN_2')),
+            width: 0
+            }),
         text:new ol.style.Text({
             font: '12px Calibri,sans-serif',
             fill: new ol.style.Fill({
@@ -163,37 +246,78 @@ var precstyleFunction= function (feature,resolution){
 }
 
 
-var tgem=new ol.layer.Vector({
-name:'tmax01',
-source: tempsource,
-style:tempstyleFunction,
-opacity:0.6
+var standaardstijl = new ol.style.Style({
+    fill:new ol.style.Fill({color:"5500EE"}),
+    stroke: new ol.style.Stroke({
+            color: "5500EE",
+            width: 0
+            })
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var klimdata=new ol.layer.Vector({
+    name:'tmax01',
+    source: tempsource,
+    style:tgemstyleFunction,
+    opacity:0.6
 });
 
-var ptot=new ol.layer.Vector({
-name:'ptot',
-source: precsource,
-style:precstyleFunction,
-opacity:0.6
+
+var lagen=new ol.layer.Group({
+    layers:[osmlayer,klimdata]
 });
 
 
-var layerst=new ol.layer.Group({
-    layers:[osmlayer,tgem]
-});
-
-var layersp=new ol.layer.Group({
-    layers:[osmlayer,ptot]
-});
-
-function setMapType(newType){
-    if (newType=='tgem'){
-            map.setLayerGroup(layerst);
+function setMapType(newType,style){
+    klimdata.setStyle(style);
+    parameter=newType;
+    unit=parameters[newType];
+    var lowt = $( "#mint" ).val();
+    var hight = $( "#maxt" ).val();  
+    //var lowp = $( "#minp" ).val();
+    //var highp = $( "#maxp" ).val();  
+    var lowtzomer=$( "#mintzomer" ).val();
+    var hightzomer=$( "#maxtzomer" ).val();
+    var lowtwinter=$( "#mintwinter" ).val();
+    var hightwinter=$( "#maxtwinter" ).val();
+    klimdata.getSource().getFeatures().forEach(function (feature){
+        if (feature.get('tgem')<=hight && feature.get('tgem')>=lowt 
+            && feature.get('tzomer')<=hightzomer && feature.get('tzomer')>=lowtzomer
+            && feature.get('twinter')<=hightwinter && feature.get('twinter')>=lowtwinter){           
+            feature.setStyle();
         }
-    else if (newType=='ptot'){
-            map.setLayerGroup(layersp);
-        }
-}
+    })
+};
+
 
 
 
@@ -231,7 +355,7 @@ closer.onclick = function () {
 var map = new ol.Map({
 target: 'map',
 layers:
-  layerst
+  lagen
 ,
 overlays:[overlay],
 view: new ol.View({
@@ -239,6 +363,111 @@ view: new ol.View({
   zoom: 4
 })
 });
+
+
+
+
+/*
+// Converts geojson-vt data to GeoJSON
+var replacer = function (key, value) {
+  if (value.geometry) {
+    var type;
+    var rawType = value.type;
+    var geometry = value.geometry;
+
+    if (rawType === 1) {
+      type = 'MultiPoint';
+      if (geometry.length == 1) {
+        type = 'Point';
+        geometry = geometry[0];
+      }
+    } else if (rawType === 2) {
+      type = 'MultiLineString';
+      if (geometry.length == 1) {
+        type = 'LineString';
+        geometry = geometry[0];
+      }
+    } else if (rawType === 3) {
+      type = 'Polygon';
+      if (geometry.length > 1) {
+        type = 'MultiPolygon';
+        geometry = [geometry];
+      }
+    }
+
+    return {
+      'type': 'Feature',
+      'geometry': {
+        'type': type,
+        'coordinates': geometry,
+      },
+      'properties': value.tags,
+    };
+  } else {
+    return value;
+  }
+};
+
+var url = 'testdata.geojson';
+fetch(url)
+  .then(function (response) {
+    return response.json();
+  })
+  .then(function (json) {
+    var tileIndex = geojsonvt(json, {
+      extent: 4096,
+      debug: 1,
+    });
+    var format = new ol.format.GeoJSON({
+      // Data returned from geojson-vt is in tile pixel units
+      dataProjection: new ol.proj.Projection({
+        code: 'TILE_PIXELS',
+        units: 'tile-pixels',
+        extent: [0, 0, 4096, 4096],
+      }),
+    });
+    var vectorSource = new ol.source.VectorTileSource({
+      tileUrlFunction: function (tileCoord) {
+        // Use the tile coordinate as a pseudo URL for caching purposes
+        return ol.JSON.stringify(tileCoord);
+      },
+      tileLoadFunction: function (tile, url) {
+        var tileCoord = ol.JSON.parse(url);
+        var data = tileIndex.getTile(
+          tileCoord[0],
+          tileCoord[1],
+          tileCoord[2]
+        );
+        var geojson = ol.JSON.stringify(
+          {
+            type: 'FeatureCollection',
+            features: data ? data.features : [],
+          },
+          replacer
+        );
+        var features = ol.format.readFeatures(geojson, {
+          extent: vectorSource.getTileGrid().getTileCoordExtent(tileCoord),
+          featureProjection: map.getView().getProjection(),
+        });
+        ol.tile.setFeatures(features);
+      },
+    });
+    var klimdata = new ol.vector.VectorTileLayer({
+      name:'tmax01',
+      source: vectorSource,
+      style:tgemstyleFunction,
+      opacity:0.6
+    });
+    map.addLayer(klimdata);
+  });
+
+*/
+
+
+
+
+
+
 
 
 
@@ -266,52 +495,46 @@ view: new ol.View({
 }*/
 
 var displayFeatureInfoClick = function (pixel) {
-    
-  switch(map.getLayerGroup()){
-    case (layerst):
-        layer=tgem;
-        break;
-    case (layersp):
-        layer=ptot;
-  }
-  layer.getFeatures(pixel).then(function (features) {
-    var feature = features.length ? features[0] : undefined;
-    if (features.length && map.getLayerGroup()==layerst) {
-      content.innerHTML = feature.get('DN') + ' °C';
-    } 
-    else if (features.length && map.getLayerGroup()==layersp) {
-        content.innerHTML = feature.get('DN')-50 + ' - ' +feature.get('DN') + ' mm';
-    }  
+  var features = [];
+  var laagoud='';
+  map.forEachFeatureAtPixel (pixel, function (feature,layer) {
+      if (layer!= laagoud){
+      features.push(feature);}
+      laagoud=layer;
+    });
+    if (features.length >0) {
+        var info = [];
+            info.push(features[0].get(parameter));
+        //content.innerHTML = info.join (' mm <br>  ') + ' C'+'<br>';
+        //content.innerHTML = feature.get('DN')-50 + ' - ' +feature.get('DN') + ' mm';
+        content.innerHTML = info[0] + ' '+ unit;
+    }
     else {
         content.innerHTML = 'geen waarde';
     }
-  });
-};
+  };
 
 
-var displayFeatureInfo = function (pixel) {
-    
-  switch(map.getLayerGroup()){
-    case (layerst):
-        layer=tgem;
-        break;
-    case (layersp):
-        layer=ptot;
-  }
-  layer.getFeatures(pixel).then(function (features) {
-    var feature = features.length ? features[0] : undefined;
-    var info = document.getElementById('info');
-    if (features.length && map.getLayerGroup()==layerst) {
-      info.innerHTML = feature.get('DN') + ' °C';
-    } 
-    else if (features.length && map.getLayerGroup()==layersp) {
-        info.innerHTML = feature.get('DN')-50 + ' - ' +feature.get('DN') + ' mm';
-    }  
-    else {
-      info.innerHTML = '&nbsp;';
+var displayFeatureInfo = function (pixel) {    
+  var features = [];
+  var laagoud='';
+  map.forEachFeatureAtPixel (pixel,function(feature,layer) {
+      if (layer!= laagoud){
+      features.push(feature);}
+      laagoud=layer;
+    });    
+    var container = document.getElementById('info');
+    if (features.length >0) {
+      container.innerHTML='&nbsp;';
+      for (var key in parameters){
+      container.innerHTML += features[0].get(key) + ' ' + document.getElementById(key).value + '<br>'; 
+      }
     }
-  });
-};
+    else {
+      container.innerHTML = '&nbsp;';
+    }
+  };
+
 
 
 

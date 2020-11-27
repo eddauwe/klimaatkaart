@@ -1,12 +1,16 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!--solve favicon.ico error-->
+    <link rel="shortcut icon" href="">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css" type="text/css">
     <style>  
     
     .selector {
-        position:absolute;
+        position:relative;
         left:0px;
+        top:560px;
+        width:250px;
     }
     
       /* The container */
@@ -25,16 +29,26 @@
 
       .map {
         position:absolute;
-        left:160px;
+        right:200px;
         width:1400px;
         height:700px;
       }
       
+      .ui-content {
+        position:absolute;
+        height:400px;
+        width:550px;
+        bottom: 40px;
+      }
+      
+      
       #info {
         position:absolute;
-        top:200px;
+        right:140px;
+        top:140px;
         background-color:yellow;
       }
+      
       
       .ol-popup {
         position: absolute;
@@ -85,32 +99,361 @@
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
     <title>OpenLayers example</title>
     <!--jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!--<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>-->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    
+    
+    
     <!--geojson object-->
-    <script src="tmax_gem_vector.geojson.js"></script>
-    <script src="prec_som_reclass.geojson.js"></script>
+    <script src="testdata.geojson.js"></script>
     <!--geocoder-->
     <link href="https://unpkg.com/ol-geocoder/dist/ol-geocoder.min.css" rel="stylesheet">
+    
+    
     <script src="https://unpkg.com/ol-geocoder"></script>
+    
+    <!--turf nodig voor intersectie-->
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@5/turf.min.js"></script>
+
+    <!--geojson vt-->
+    <script src="https://unpkg.com/geojson-vt@3.2.0/geojson-vt.js"></script>
+    
+    
   </head>
   <body>
 
     <h1 style="text-align:center; font-size:20px;">Wereldklimaatkaart</h1>
     <div class="viewer">
-        <div class="selector">
-              <input type="radio" id="tgem" checked="checked" name="radio" onclick="setMapType('tgem');" value="temp">
-              <label for="temp">Temperatuur</label><br>
-              <input type="radio" id="ptot" name="radio" onclick="setMapType('ptot');" value="prec">   
-              <label for="prec">Neerslag</label>
-        </div>
+
+
         <div id="map" class="map"></div> 
+        
+        
+        <div class="selector">
+              <input type="radio" id="tgem" checked="checked" name="radio" onclick="setMapType('tgem',tgemstyleFunction);" value="C">
+              <label for="temp">Gemiddelde jaarlijkse temperatuur</label><br>
+              <input type="radio" id="tgem" name="radio" onclick="setMapType('tgem',standaardstijl);" value="mm">  
+              <label for="prec">Gemiddelde jaarlijkse totaalneerslag</label><br>
+              <input type="radio" id="tzomer" name="radio" onclick="setMapType('tzomer',tzomerstyleFunction);" value="C">  
+              <label for="is">Gemiddelde temperatuur zomer</label><br>
+              <input type="radio" id="twinter" name="radio" onclick="setMapType('twinter',twinterstyleFunction);" value="C">  
+              <label for="is">Gemiddelde temperatuur winter</label><br>
+              <input type="radio" id="tgem" name="radio" onclick="setMapType('tgem',standaardstijl);" value="mm">  
+              <label for="is">Gemiddelde totale neerslag zomer</label><br>
+              <input type="radio" id="tgem" name="radio" onclick="setMapType('tgem',standaardstijl);" value="mm">  
+              <label for="is">Gemiddelde totale neerslag winter</label>             
+        </div>
      
         <div id="info">&nbsp;</div>
+        
+        
+        
+
+        
+
     </div>
+    
+    <!--<div data-role="main" class="ui-content">
+        <div data-role="rangeslider">
+          <label for="range-1a">Neerslag:</label>
+          <input type="range" name="range-1a" id="range-1a" value="0" min="0" max="5000">
+          <label for="range-1b">Neerslag:</label>
+          <input type="range" name="range-1b" id="range-1b" value="5000" min="0" max="5000">
+        </div>
+        
+        <input type = "button" value="Confirm" onclick="LowerBound()">
+        
+        
+        <div data-role="rangeslider">
+          <label for="price-min">Temperatuur:</label>
+          <input type="range" name="price-min" id="price-min" value="-45" min="-45" max="45">
+          <label for="price-max">Temperatuur:</label>
+          <input type="range" name="price-max" id="price-max" value="45" min="-45" max="45">
+        </div>
+        
+        
+    </div>-->
+    
     <div id="popup" class="ol-popup">
         <a href="#" id="popup-closer" class="ol-popup-closer"></a>
         <div id="popup-content"></div>
     </div>   
     <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="sliderselect.js"></script>
+    
+    <!--jaargemiddelden sliders--> 
+    <div style="position:fixed;height:100px;top:190px;right:0px;width:180px;background-color:red"><label style="font-size:14px;">Jaargemiddelden</label>    
+        <div style="position:absolute;height:100px;top:20px;left:0px;background-color:yellow">
+            <label style="font-size:10px;">Temperatuur</label><br>
+            <label style="font-size:8px;">max</label><input type="text" id="maxt" style="position:relative;top:0px;width: 25px;border:0; color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;bottom:0px;font-size:10px;">C</label>
+            <div id="slider-range2" style="position:relative;height:100px;top:10px;"></div>    
+            <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="mint" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">C</label>
+        </div>
+        
+        <div style="position:absolute;height:100px;top:20px;left:100px;background-color:yellow">
+            <label style="font-size:10px;">Neerslag</label><br>
+            <label style="font-size:8px;">max</label><input type="text" id="maxp" style="position:relative;top:0px;width: 25px;border:0; color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;bottom:0px;font-size:10px;">mm</label>
+            <div id="slider-range1" style="position:relative;height:100px;top:10px;"></div>    
+            <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="minp" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">mm</label>
+        </div>           
+    </div>
+    
+
+    <!--seizoensgemiddelden temperatuur sliders-->
+    <div style="position:fixed;height:100px;top:390px;right:0px;width:180px;background-color:green"><label style="font-size:12px;">Seizoensgemiddelden temperatuur</label>    
+        <div style="position:absolute;height:100px;top:20px;left:0px;background-color:yellow">
+            <label style="font-size:10px;">Zomer</label><br>
+            <label style="font-size:8px;">max</label><input type="text" id="maxtzomer" style="position:relative;top:0px;width: 25px;border:0; color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;bottom:0px;font-size:10px;">C</label>
+            <div id="slider-range3" style="position:relative;height:100px;top:10px;"></div>    
+            <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="mintzomer" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">C</label>
+        </div>
+        
+        <div style="position:absolute;height:100px;top:20px;left:100px;background-color:yellow">
+            <label style="font-size:10px;">Winter</label><br>
+            <label style="font-size:8px;">max</label><input type="text" id="maxtwinter" style="position:relative;top:0px;width: 25px;border:0; color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;bottom:0px;font-size:10px;">C</label>
+            <div id="slider-range4" style="position:relative;height:100px;top:10px;"></div>    
+            <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="mintwinter" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">C</label>
+        </div>           
+    </div>    
+    
+    <!--seizoensgemiddelden neerslag sliders-->
+    <div style="position:fixed;height:100px;top:590px;right:0px;width:180px;background-color:green"><label style="font-size:12px;">Seizoensgemiddelden neerslag</label>    
+        <div style="position:absolute;height:100px;top:20px;left:0px;background-color:yellow">
+            <label style="font-size:10px;">Zomer</label><br>
+            <label style="font-size:8px;">max</label><input type="text" id="maxt" style="position:relative;top:0px;width: 25px;border:0; color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;bottom:0px;font-size:10px;">mm</label>
+            <div id="slider-range5" style="position:relative;height:100px;top:10px;"></div>    
+            <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="mint" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">mm</label>
+        </div>
+        
+        <div style="position:absolute;height:100px;top:20px;left:100px;background-color:yellow">
+            <label style="font-size:10px;">Winter</label><br>
+            <label style="font-size:8px;">max</label><input type="text" id="maxp" style="position:relative;top:0px;width: 25px;border:0; color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;bottom:0px;font-size:10px;">mm</label>
+            <div id="slider-range6" style="position:relative;height:100px;top:10px;"></div>    
+            <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="minp" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">mm</label>
+        </div>           
+    </div>      
+    
+    
+    
+
+    
+    
+    
+    <!--<input type = "button" value="Confirm" onclick="Bounds()" style="position:absolute;top:700px;">-->
+    
+    
+    
+        <script>
+  $( function() {
+    $( "#slider-range1" ).slider({
+      min:0,
+      max:5000,
+      orientation: "vertical",
+      range: true,
+      values: [ 0, 5000 ],
+      slide: function( event, ui ) {
+        $( "#minp" ).val(ui.values[ 0 ]); 
+        $( "#maxp" ).val(ui.values[ 1 ]);
+        //Bounds(ui);
+      },
+      change:function(event,ui) {
+        klimaatfilter(ui);
+      }
+    });
+    $( "#minp" ).val($( "#slider-range1" ).slider( "values", 0 ));
+    $( "#maxp" ).val($( "#slider-range1" ).slider( "values", 1 ));
+  } );
+  //update geojson bij verschuiven slider
+  //$( ".slider-range1" ).on( "slidechange", function(event,precBounds()) {} );
+  
+  
+
+  
+  $( function() {
+    $( "#slider-range2" ).slider({
+      min:-45,
+      max:45,
+      orientation: "vertical",
+      range: true,
+      values: [ -45, 45 ],
+      slide: function( event, ui ) {
+        $( "#mint" ).val(ui.values[ 0 ]); 
+        $( "#maxt" ).val(ui.values[ 1 ]);
+      },
+      change:function(event,ui) {
+        klimaatfilter(ui);
+      }
+    });
+    $( "#mint" ).val($( "#slider-range2" ).slider( "values", 0 ));
+    $( "#maxt" ).val($( "#slider-range2" ).slider( "values", 1 ));
+  } );
+  
+  
+  
+  
+  
+  
+    $( function() {
+    $( "#slider-range3" ).slider({
+      min:0,
+      max:5000,
+      orientation: "vertical",
+      range: true,
+      values: [ 0, 5000 ],
+      slide: function( event, ui ) {
+        $( "#mintzomer" ).val(ui.values[ 0 ]); 
+        $( "#maxtzomer" ).val(ui.values[ 1 ]);
+        //Bounds(ui);
+      },
+      change:function(event,ui) {
+        klimaatfilter(ui);
+      }
+    });
+    $( "#mintzomer" ).val($( "#slider-range3" ).slider( "values", 0 ));
+    $( "#maxtzomer" ).val($( "#slider-range3" ).slider( "values", 1 ));
+  } );
+  
+  
+  
+  
+  
+  
+    $( function() {
+    $( "#slider-range4" ).slider({
+      min:0,
+      max:5000,
+      orientation: "vertical",
+      range: true,
+      values: [ 0, 5000 ],
+      slide: function( event, ui ) {
+        $( "#mintwinter" ).val(ui.values[ 0 ]); 
+        $( "#maxtwinter" ).val(ui.values[ 1 ]);
+        //Bounds(ui);
+      },
+      change:function(event,ui) {
+        klimaatfilter(ui);
+      }
+    });
+    $( "#mintwinter" ).val($( "#slider-range4" ).slider( "values", 0 ));
+    $( "#maxtwinter" ).val($( "#slider-range4" ).slider( "values", 1 ));
+  } );
+  
+  
+  
+    $( function() {
+    $( "#slider-range5" ).slider({
+      min:0,
+      max:5000,
+      orientation: "vertical",
+      range: true,
+      values: [ 0, 5000 ],
+      slide: function( event, ui ) {
+        $( "#minp" ).val(ui.values[ 0 ]); 
+        $( "#maxp" ).val(ui.values[ 1 ]);
+        //Bounds(ui);
+      },
+      change:function(event,ui) {
+        klimaatfilter(ui);
+      }
+    });
+    $( "#minp" ).val($( "#slider-range5" ).slider( "values", 0 ));
+    $( "#maxp" ).val($( "#slider-range5" ).slider( "values", 1 ));
+  } );
+  
+  
+  
+  
+    $( function() {
+    $( "#slider-range6" ).slider({
+      min:0,
+      max:5000,
+      orientation: "vertical",
+      range: true,
+      values: [ 0, 5000 ],
+      slide: function( event, ui ) {
+        $( "#minp" ).val(ui.values[ 0 ]); 
+        $( "#maxp" ).val(ui.values[ 1 ]);
+        //Bounds(ui);
+      },
+      change:function(event,ui) {
+        klimaatfilter(ui);
+      }
+    });
+    $( "#minp" ).val($( "#slider-range6" ).slider( "values", 0 ));
+    $( "#maxp" ).val($( "#slider-range6" ).slider( "values", 1 ));
+  } );
+  
+  
+  
+  
+  
+
+
+  $("#maxp").change(function() {
+    if (parseInt($("#maxp").val()) >= parseInt($("#minp").val()))
+    {$("#slider-range1").slider('values',1,$(this).val());}
+    else {alert("Gelieve een geldig bereik te kiezen, idioot!");}
+    });
+    
+  $("#minp").change(function() {
+    if (parseInt($("#maxp").val()) >= parseInt($("#minp").val()))
+    {$("#slider-range1").slider('values',0,$(this).val());}
+    else {alert("Gelieve een geldig bereik te kiezen, idioot!");}
+    });
+    
+    
+  $("#maxt").change(function() {
+    if (parseInt($("#maxt").val()) >= parseInt($("#mint").val()))
+    {$("#slider-range2").slider('values',1,$(this).val());}
+    else {alert("Gelieve een geldig bereik te kiezen, idioot!");}
+    });
+    
+  $("#mint").change(function() {
+    if (parseInt($("#maxt").val()) >= parseInt($("#mint").val()))
+    {$("#slider-range2").slider('values',0,$(this).val());}
+    else {alert("Gelieve een geldig bereik te kiezen, idioot!");}
+    });
+    
+  $("#maxtzomer").change(function() {
+    if (parseInt($("#maxtzomer").val()) >= parseInt($("#mintzomer").val()))
+    {$("#slider-range3").slider('values',1,$(this).val());}
+    else {alert("Gelieve een geldig bereik te kiezen, idioot!");}
+    });
+    
+  $("#mintzomer").change(function() {
+    if (parseInt($("#maxtzomer").val()) >= parseInt($("#mintzomer").val()))
+    {$("#slider-range3").slider('values',0,$(this).val());}
+    else {alert("Gelieve een geldig bereik te kiezen, idioot!");}
+    });    
+    
+    
+  $("#maxtwinter").change(function() {
+    if (parseInt($("#maxtwinter").val()) >= parseInt($("#mintwinter").val()))
+    {$("#slider-range4").slider('values',1,$(this).val());}
+    else {alert("Gelieve een geldig bereik te kiezen, idioot!");}
+    });
+    
+  $("#mintwinter").change(function() {
+    if (parseInt($("#maxtwinter").val()) >= parseInt($("#mintwinter").val()))
+    {$("#slider-range4").slider('values',0,$(this).val());}
+    else {alert("Gelieve een geldig bereik te kiezen, idioot!");}
+    });    
+    
+    
+    
+  
+  
+  </script>
+    
+    
+    
+    
+    
+    
+    
   </body>
 </html>
