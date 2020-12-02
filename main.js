@@ -390,8 +390,8 @@ layers:
 ,
 overlays:[overlay],
 view: new ol.View({
-  center: ol.proj.fromLonLat([3, 50]),
-  zoom: 6
+  center: ol.proj.fromLonLat([-90, 45]),
+  zoom: 5
 })
 });
 
