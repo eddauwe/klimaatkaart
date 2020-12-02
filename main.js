@@ -1,4 +1,4 @@
-
+﻿
 
 
 var osmlayer=new ol.layer.Tile({
@@ -12,7 +12,7 @@ source: new ol.source.OSM({
 
 var unit = '°C';
 var parameter = 'tgem';
-var parameters={'tgem':'°C','tzomer':'°C','twinter':'°C'};
+var parameters={'tgem':'°C','tzomer':'°C','twinter':'°C','ptot':'mm','pzomer':'mm','pwinter':'mm'};
 
 
 var projection = new ol.proj.Projection({
@@ -342,7 +342,8 @@ function setMapType(newType,style){
             && feature.get('ptot')<=highp && feature.get('ptot')>=lowp
             && feature.get('pzomer')<=highpzomer && feature.get('pzomer')>=lowpzomer
             && feature.get('pwinter')<=highpwinter && feature.get('pwinter')>=lowpwinter
-            ){           
+            ){         
+            //reset feature style to layer style
             feature.setStyle();
         }
     })
@@ -390,7 +391,7 @@ layers:
 overlays:[overlay],
 view: new ol.View({
   center: ol.proj.fromLonLat([3, 50]),
-  zoom: 4
+  zoom: 6
 })
 });
 
@@ -409,7 +410,7 @@ var displayFeatureInfoClick = function (pixel) {
             info.push(features[0].get(parameter));
         //content.innerHTML = info.join (' mm <br>  ') + ' C'+'<br>';
         //content.innerHTML = feature.get('DN')-50 + ' - ' +feature.get('DN') + ' mm';
-        content.innerHTML = info[0] + ' '+ unit;
+        content.innerHTML = parameter + ": " + info[0] + ' '+ unit;
     }
     else {
         content.innerHTML = 'geen waarde';
@@ -427,9 +428,9 @@ var displayFeatureInfo = function (pixel) {
     });    
     var container = document.getElementById('info');
     if (features.length >0) {
-      container.innerHTML='&nbsp;';
+      container.innerHTML='';
       for (var key in parameters){
-      container.innerHTML += features[0].get(key) + ' ' + document.getElementById(key).value + '<br>'; 
+      container.innerHTML += key + ": " + features[0].get(key) + ' ' + document.getElementById(key).value + '<br>'; 
       }
     }
     else {
