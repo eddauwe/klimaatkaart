@@ -49,6 +49,13 @@
         background-color:yellow;
       }
       
+      #coordinaten {
+        position:absolute;
+        left:20px;
+        top:20px;
+        background-color:yellow;
+      }
+      
       
       .ol-popup {
         position: absolute;
@@ -92,6 +99,10 @@
         content: "X";
       }
       
+      .bw{
+        filter:grayscale(100%);
+      }
+      
       
       
     </style>
@@ -105,6 +116,8 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.3/proj4.js"></script>
     
     
     
@@ -149,6 +162,8 @@
         </div>
      
         <div id="info">&nbsp;</div>
+        
+        <div id="coordinaten"></div>
         
         
         
@@ -229,7 +244,7 @@
             <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="minpzomer" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">mm</label>
         </div>
         
-        <div style="position:absolute;height:100px;top:20px;left:100px;background-color:yellow">
+        <div style="position:absolute;height:100px;top:20px;left:100px">
             <label style="font-size:10px;">Winter</label><br>
             <label style="font-size:8px;">max</label><input type="text" id="maxpwinter" style="position:relative;top:0px;width: 25px;border:0; color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;bottom:0px;font-size:10px;">mm</label>
             <div id="slider-range6" style="position:relative;height:100px;top:10px;"></div>    

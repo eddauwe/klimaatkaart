@@ -1,4 +1,23 @@
 ﻿
+//canada projectie
+proj4.defs("EPSG:3978","+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+
+
+ol.proj.proj4.register(proj4);
+
+// Configure the Sphere Mollweide projection object with an extent,
+// and a world extent. These are required for the Graticule.
+
+
+var canadaProjection = new ol.proj.Projection({
+  code: 'EPSG:3978',
+  extent: [
+    -18019909.21177587,
+    -9009954.605703328,
+    18019909.21177587,
+    9009954.605703328 ],
+  worldExtent: [-179, -89.99, 179, 89.99],
+});
 
 
 var osmlayer=new ol.layer.Tile({
@@ -8,6 +27,16 @@ source: new ol.source.OSM({
     
 })
 });
+
+
+var stamen = new ol.layer.Tile({
+    name:'basemap',
+      source: new ol.source.Stamen({
+        layer: 'toner-lite',
+      }),
+    })
+
+
 
 
 var unit = '°C';
@@ -36,10 +65,13 @@ source: new ol.source.ImageStatic({
 
 
 //geojson sources
-var tempsource = new ol.source.Vector({
-    features:(new ol.format.GeoJSON()).readFeatures(klimaat)
-});
 
+var tempsource = new ol.source.Vector({
+    features:(new ol.format.GeoJSON()).readFeatures(klimaat,{
+      dataProjection: 'EPSG:3857',
+      featureProjection: 'EPSG:3978'
+    })
+});
 
 
 
@@ -313,8 +345,10 @@ var klimdata=new ol.layer.Vector({
 });
 
 
+
+
 var lagen=new ol.layer.Group({
-    layers:[osmlayer,klimdata]
+    layers:[stamen,klimdata,new ol.layer.Graticule()]
 });
 
 
@@ -383,17 +417,33 @@ closer.onclick = function () {
 };
 
 
+var mousePositionControl = new ol.control.MousePosition({
+  coordinateFormat: ol.coordinate.createStringXY(4),
+  projection: 'EPSG:4326',
+  // comment the following two lines to have the mouse position
+  // be placed within the map.
+  className: 'custom-mouse-position',
+  target: document.getElementById('coordinaten'),
+  undefinedHTML: '',
+});
+
+
 var map = new ol.Map({
+controls: ol.control.defaults().extend([mousePositionControl]),
 target: 'map',
 layers:
   lagen
 ,
 overlays:[overlay],
 view: new ol.View({
-  center: ol.proj.fromLonLat([-90, 45]),
+  center: ol.proj.toLonLat([-90, 45]),
+  projection:canadaProjection,
   zoom: 5
 })
 });
+
+
+
 
 
 
@@ -430,7 +480,7 @@ var displayFeatureInfo = function (pixel) {
     if (features.length >0) {
       container.innerHTML='';
       for (var key in parameters){
-      container.innerHTML += key + ": " + features[0].get(key) + ' ' + document.getElementById(key).value + '<br>'; 
+      container.innerHTML += key + ": " + features[0].get(key) + ' ' + document.getElementById(key).value + '<br>';      
       }
     }
     else {
