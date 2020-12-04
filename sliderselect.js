@@ -235,7 +235,7 @@ function klimaatfilter(ui){
     var hightwinter=$( "#maxtwinter" ).val();
     var lowpzomer=$( "#minpzomer" ).val();
     var highpzomer=$( "#maxpzomer" ).val();
-    var lowpwinter=$( "#mintwinter" ).val();
+    var lowpwinter=$( "#minpwinter" ).val();
     var highpwinter=$( "#maxpwinter" ).val();
     
     

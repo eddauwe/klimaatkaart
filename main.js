@@ -422,7 +422,7 @@ function setMapType(newType,style){
     var hightwinter=$( "#maxtwinter" ).val();
     var lowpzomer=$( "#minpzomer" ).val();
     var highpzomer=$( "#maxpzomer" ).val();
-    var lowpwinter=$( "#mintwinter" ).val();
+    var lowpwinter=$( "#minpwinter" ).val();
     var highpwinter=$( "#maxpwinter" ).val();
     
     klimdata.getSource().getFeatures().forEach(function (feature){
