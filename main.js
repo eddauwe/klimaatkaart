@@ -494,7 +494,8 @@ overlays:[overlay],
 view: new ol.View({
   center: ol.proj.toLonLat([-90, 45]),
   projection:canadaProjection,
-  zoom: 5
+  zoom: 5,
+  minZoom:4
 })
 });
 
