@@ -3,10 +3,13 @@
 proj4.defs("EPSG:3978","+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
 
 
+
+
 ol.proj.proj4.register(proj4);
 
 // Configure the Sphere Mollweide projection object with an extent,
 // and a world extent. These are required for the Graticule.
+
 
 
 var canadaProjection = new ol.proj.Projection({
@@ -68,8 +71,8 @@ source: new ol.source.ImageStatic({
 
 var tempsource = new ol.source.Vector({
     features:(new ol.format.GeoJSON()).readFeatures(klimaat,{
-      dataProjection: 'EPSG:3857',
-      featureProjection: 'EPSG:3978'
+      dataProjection: 'EPSG:3857'
+      //,featureProjection: 'EPSG:3978'
     })
 });
 
@@ -497,7 +500,7 @@ layers:
 overlays:[overlay],
 view: new ol.View({
   center: ol.proj.toLonLat([-90, 45]),
-  projection:canadaProjection,
+  //projection:canadaProjection,
   zoom: 5,
   minZoom:4
 })

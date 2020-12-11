@@ -224,7 +224,7 @@ function tempBounds(ui){
     
     
     
-function klimaatfilter(ui){
+function klimaatfilter(){
     var lowt = $( "#mint" ).val();
     var hight = $( "#maxt" ).val();  
     var lowp = $( "#minp" ).val();

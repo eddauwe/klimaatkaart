@@ -6,12 +6,78 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css" type="text/css">
     <style>  
     
-    .selector {
+    #gegevenslaag {
         position:absolute;
         left:0px;
         bottom:10px;
         width:250px;
     }
+    
+    .custom-select {
+        position:relative;
+        font-family:Arial;
+        left:1200px;
+    }
+    
+    .custom-select select {
+        display: none;
+    }
+    
+    .select-selected {
+        background-color: DodgerBlue;
+    }
+    
+    
+    /* Style the arrow inside the select element: */
+    .select-selected:after {
+      position: absolute;
+      content: "";
+      top: 14px;
+      right: 10px;
+      width: 0;
+      height: 0;
+      border: 6px solid transparent;
+      border-color: #fff transparent transparent transparent;
+    }
+    
+    
+        /* Point the arrow upwards when the select box is open (active): */
+    .select-selected.select-arrow-active:after {
+      border-color: transparent transparent #fff transparent;
+      top: 7px;
+    }
+
+    /* style the items (options), including the selected item: */
+    .select-items div,.select-selected {
+      color: #ffffff;
+      padding: 8px 16px;
+      border: 1px solid transparent;
+      border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+      cursor: pointer;
+    }
+
+    /* Style items (options): */
+    .select-items {
+      position: absolute;
+      background-color: DodgerBlue;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 99;
+    }
+
+    /* Hide the items when the select box is closed: */
+    .select-hide {
+      display: none;
+    }
+
+    .select-items div:hover, .same-as-selected {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    
+    
+    
     
       /* The container */
     .container {
@@ -135,6 +201,8 @@
     <!--geojson vt-->
     <script src="https://unpkg.com/geojson-vt@3.2.0/geojson-vt.js"></script>
     
+
+    
     
   </head>
   <body>
@@ -146,7 +214,7 @@
         <div id="map" class="map"></div> 
         
         
-        <div class="selector">
+        <div class="selector" id = "gegevenslaag">
               <input type="radio" id="tgem" checked="checked" name="radio" onclick="hideLayer();" value="C">
               <label for="temp">Geen gegevenslaag</label><br>  
               <input type="radio" id="tgem" checked="checked" name="radio" onclick="setMapType('tgem',tgemstyleFunction);" value="C">
@@ -162,6 +230,20 @@
               <input type="radio" id="pwinter" name="radio" onclick="setMapType('pwinter',pwinterstyleFunction);" value="mm">  
               <label for="is">Gemiddelde totale neerslag winter</label>             
         </div>
+        
+       
+        
+        
+        <div class = "custom-select" style="width:200px;">
+            <select id="projectiesysteem">
+                <option value ="0">Selecteer projectiesysteem</option>
+                <option value ="1">WGS 84 / Pseudo-Mercator</option>
+                <option value ="2">NAD83 / Canada Atlas Lambert</option>
+            </select>       
+        </div>
+        
+        
+        
      
         <div id="info">&nbsp;</div>
         
@@ -201,7 +283,8 @@
     </div>   
     <script type="text/javascript" src="main.js"></script>
     <script type="text/javascript" src="sliderselect.js"></script>
-    
+    <!--selectbox-->
+    <script src="customselectbox.js"></script>
     <!--jaargemiddelden sliders--> 
     <div style="position:fixed;height:100px;top:190px;right:0px;width:180px"><label style="font-size:14px;">Jaargemiddelden</label>    
         <div style="position:absolute;height:100px;top:20px;left:0px">
@@ -279,7 +362,7 @@
         //Bounds(ui);
       },
       change:function(event,ui) {
-        klimaatfilter(ui);
+        klimaatfilter();
       }
     });
     $( "#minp" ).val($( "#slider-range1" ).slider( "values", 0 ));
@@ -303,7 +386,7 @@
         $( "#maxt" ).val(ui.values[ 1 ]);
       },
       change:function(event,ui) {
-        klimaatfilter(ui);
+        klimaatfilter();
       }
     });
     $( "#mint" ).val($( "#slider-range2" ).slider( "values", 0 ));
@@ -328,7 +411,7 @@
         //Bounds(ui);
       },
       change:function(event,ui) {
-        klimaatfilter(ui);
+        klimaatfilter();
       }
     });
     $( "#mintzomer" ).val($( "#slider-range3" ).slider( "values", 0 ));
@@ -353,7 +436,7 @@
         //Bounds(ui);
       },
       change:function(event,ui) {
-        klimaatfilter(ui);
+        klimaatfilter();
       }
     });
     $( "#mintwinter" ).val($( "#slider-range4" ).slider( "values", 0 ));
@@ -376,7 +459,7 @@
         //Bounds(ui);
       },
       change:function(event,ui) {
-        klimaatfilter(ui);
+        klimaatfilter();
       }
     });
     $( "#minpzomer" ).val($( "#slider-range5" ).slider( "values", 0 ));
@@ -400,7 +483,7 @@
         //Bounds(ui);
       },
       change:function(event,ui) {
-        klimaatfilter(ui);
+        klimaatfilter();
       }
     });
     $( "#minpwinter" ).val($( "#slider-range6" ).slider( "values", 0 ));
