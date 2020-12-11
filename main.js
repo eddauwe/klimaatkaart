@@ -409,6 +409,7 @@ var lagen=new ol.layer.Group({
 
 
 function setMapType(newType,style){
+    klimdata.setOpacity(1);
     klimdata.setStyle(style);
     parameter=newType;
     unit=parameters[newType];
@@ -439,6 +440,9 @@ function setMapType(newType,style){
     })
 };
 
+function hideLayer(){
+    klimdata.setOpacity(0);
+}
 
 
 
