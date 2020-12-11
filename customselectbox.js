@@ -53,7 +53,8 @@ for (i = 0; i < l; i++) {
             var code =getKeyByValue(epsg,proj)
             var prevcode=getKeyByValue(epsg,prevproj)
             
-            centerview = ol.proj.fromLonLat(ol.proj.toLonLat(map.getView().getCenter(),prevcode));
+            centerview = map.getView().getCenter();
+            prevzoom=map.getView().getZoom();
             
             console.log(centerview);
             
@@ -83,9 +84,9 @@ for (i = 0; i < l; i++) {
             klimaatfilter();
             //new map view
             var view= new ol.View({
-              center: centerview,
+              center: ol.proj.transform(centerview,prevcode,code),
               projection:projection,
-              zoom: 5,
+              zoom: prevzoom,
               minZoom:4
             })
             
