@@ -44,12 +44,19 @@ for (i = 0; i < l; i++) {
             proj=document.getElementsByClassName("select-selected")[0].innerHTML;
             console.log("projectie: " + proj);
             console.log("previous projectie: " + prevproj);
+
             if (proj!=prevproj){
             
 
             
             //epsg code
             var code =getKeyByValue(epsg,proj)
+            var prevcode=getKeyByValue(epsg,prevproj)
+            
+            centerview = ol.proj.fromLonLat(ol.proj.toLonLat(map.getView().getCenter(),prevcode));
+            
+            console.log(centerview);
+            
             //herprojecteer kaart
             var tempsource = new ol.source.Vector({
                 features:(new ol.format.GeoJSON()).readFeatures(klimaat,{
@@ -76,14 +83,11 @@ for (i = 0; i < l; i++) {
             klimaatfilter();
             //new map view
             var view= new ol.View({
-              center: ol.proj.toLonLat([0, 0]),
+              center: centerview,
               projection:projection,
               zoom: 5,
               minZoom:4
             })
-            
-            
-            
             
             map.setView(view);
             
@@ -92,7 +96,7 @@ for (i = 0; i < l; i++) {
             
             }
             
-            
+
             
             
             y = this.parentNode.getElementsByClassName("same-as-selected");
