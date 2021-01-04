@@ -500,7 +500,7 @@ layers:
 ,
 overlays:[overlay],
 view: new ol.View({
-  center: ol.proj.fromLonLat([-67, 48]),
+  center: ol.proj.fromLonLat([3, 51]),
   //projection:canadaProjection,
   zoom: 5,
   minZoom:4
