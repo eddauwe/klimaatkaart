@@ -400,7 +400,8 @@ var klimdata=new ol.layer.Vector({
     name:'tmax01',
     source: tempsource,
     style:tgemstyleFunction,
-    opacity:0.6
+    opacity:0.6,
+    visible:false
 });
 
 
@@ -412,7 +413,7 @@ var lagen=new ol.layer.Group({
 
 
 function setMapType(newType,style){
-    klimdata.setOpacity(1);
+    klimdata.setVisible(true);
     klimdata.setStyle(style);
     parameter=newType;
     unit=parameters[newType];
@@ -444,7 +445,7 @@ function setMapType(newType,style){
 };
 
 function hideLayer(){
-    klimdata.setOpacity(0);
+    klimdata.setVisible(false);
 }
 
 
@@ -499,7 +500,7 @@ layers:
 ,
 overlays:[overlay],
 view: new ol.View({
-  center: ol.proj.fromLonLat([3, 50]),
+  center: ol.proj.fromLonLat([-67, 48]),
   //projection:canadaProjection,
   zoom: 5,
   minZoom:4
