@@ -1,4 +1,26 @@
-﻿
+
+//canada projectie
+proj4.defs("EPSG:3978","+proj=lcc +lat_1=49 +lat_2=77 +lat_0=49 +lon_0=-95 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+
+
+
+
+ol.proj.proj4.register(proj4);
+
+// Configure the Sphere Mollweide projection object with an extent,
+// and a world extent. These are required for the Graticule.
+
+
+
+var canadaProjection = new ol.proj.Projection({
+  code: 'EPSG:3978',
+  extent: [
+    -18019909.21177587,
+    -9009954.605703328,
+    18019909.21177587,
+    9009954.605703328 ],
+  worldExtent: [-179, -89.99, 179, 89.99],
+});
 
 
 var osmlayer=new ol.layer.Tile({
@@ -8,6 +30,16 @@ source: new ol.source.OSM({
     
 })
 });
+
+
+var stamen = new ol.layer.Tile({
+    name:'basemap',
+      source: new ol.source.Stamen({
+        layer: 'toner-lite',
+      }),
+    })
+
+
 
 
 var unit = '°C';
@@ -36,39 +68,17 @@ source: new ol.source.ImageStatic({
 
 
 //geojson sources
+
 var tempsource = new ol.source.Vector({
-    features:(new ol.format.GeoJSON()).readFeatures(klimaat)
+    features:(new ol.format.GeoJSON()).readFeatures(klimaat,{
+      dataProjection: 'EPSG:3857'
+      //,featureProjection: 'EPSG:3978'
+    })
 });
 
 
-
-
-
-/*var kleurenschaal={'0':'red',
-'1':'blue'};
-var style={}
-for (item in kleurenschaal) {
-    style[item] = new ol.style.Style({
-            fill:new ol.style.Fill ({color:kleurenschaal[item]}),
-            stroke: new ol.style.Stroke({
-                color: 'black',
-                width: 1
-                }),
-            text:new ol.style.Text({
-                font: '12px Calibri,sans-serif',
-                fill: new ol.style.Fill({
-                    color:'#000'
-                }),
-                stroke: new ol.style.Stroke({
-                    color:'#fff',
-                    width:3
-                    }),
-                text:kleurenschaal[item]                 
-            })              
-        });
-}*/
-
 //zet temperatuurwaarden om in kleurenschaal
+/*
 function tempconverter(number){
     //Rood waarde
     if (number>=0){var r=(3*number) + 3}
@@ -89,7 +99,77 @@ function tempconverter(number){
     var color='rgb('+r+','+g+','+b[number]+')'
     return color  
 }
+*/
 
+
+function tempconverter(number){
+    var getal = number;
+    
+    switch (true) {
+        case (getal >= 25):
+            r=255;
+            g=0;
+            b=0; 
+            break;
+        case (getal >= 20):
+            r=229;
+            g=9;
+            b=0;
+            break;
+        case (getal >= 15):
+            r=224;
+            g=84;
+            b=0;
+            break;
+        case (getal >= 12):
+            r=220;
+            g=156;
+            b=0;      
+            break;
+        case (getal >= 9):
+            r=206;
+            g=216;
+            b=0;
+            break;
+        case (getal >= 6):
+            r=131;
+            g=212;
+            b=0;
+            break;
+        case (getal >= 3):
+            r=59;
+            g=207;
+            b=0;
+            break;
+        case (getal >= 0):
+            r=0;
+            g=203;
+            b=9;
+            break;
+        case (getal >= -5):
+            r=0;
+            g=199;
+            b=75;
+            break;
+        case (getal >= -10):
+            r=0;
+            g=195;
+            b=139;
+            break;
+        case (getal >= -15):
+            r=0;
+            g=181;
+            b=191;  
+            break;
+        case (getal < -15):
+            r=0;
+            g=168;
+            b=220;
+    }
+    
+    var color='rgb('+r+','+g+','+b+')';
+    return color  
+}
 
 
 
@@ -98,55 +178,66 @@ function precconverter(number){
     var getal = number;
     //rood waarde     
     switch (true){
+        case (getal<50):
+            r=255;
+            g=249;
+            b=163;
+            break;
+        case (getal<100):
+            r=220;
+            g=249;
+            b=144;
+            break;    
         case (getal<200):
-            r=100;
-            break;
+            r=172;
+            g=243;
+            b=127;
+            break;   
         case (getal<400):
-            r=50;
-            break;
+            r=117;
+            g=237;
+            b=110;
+            break;    
         case (getal<600):
-            r=25;
+            r=94;
+            g=231;
+            b=133;
             break;
         case (getal<800):
-            r=5;
+            r=78;
+            g=225;
+            b=170;
             break;
-        default:
-            r=0;      
-    }   
-    //groen waarde   
-    switch (true){
-        case (getal<200):
-            g=105;
+        case (getal<1000):
+            r=63;
+            g=220;
+            b=213;
             break;
-        case (getal<400):
-            g=105;
+        case (getal<1200):
+            r=49;
+            g=165;
+            b=214;
             break;
-        case (getal<600):
-            g=80;
+        case (getal<1400):
+            r=36;
+            g=99;
+            b=208;
             break;
-        case (getal<800):
-            g=50;
+        case (getal<1800):
+            r=23;
+            g=28;
+            b=202;
             break;
-        default:
-            g=5;      
-    }
-    //blauw waarde
-    var b;
-    switch (true){
-        case (getal<200):
-            b=50;
+        case (getal<2500):
+            r=68;
+            g=11;
+            b=196;
             break;
-        case (getal<400):
-            b=100;
+        case (getal>=2500):
+            r=92;
+            g=0;
+            b=182;
             break;
-        case (getal <600):
-            b=150;
-            break;
-        case (getal <800):    
-            b=200
-            break;
-        default:
-            b=250;
     }
     var color='rgb('+r+','+g+','+b+')';
     return color;
@@ -178,9 +269,9 @@ var tgemstyleFunction = function (feature,resolution) {
 // style functie
 var tzomerstyleFunction = function (feature,resolution) {
     return new ol.style.Style({
-            fill:new ol.style.Fill ({color:tempconverter(feature.get('tzomer'))}),
+            fill:new ol.style.Fill ({color:tempconverter(feature.get('tzomer')-9)}),
             stroke: new ol.style.Stroke({
-                color: tempconverter(feature.get('tzomer')),
+                color: tempconverter(feature.get('tzomer')-9),
                 width: 0
                 }),
             text:new ol.style.Text({
@@ -203,9 +294,9 @@ var tzomerstyleFunction = function (feature,resolution) {
 // style functie
 var twinterstyleFunction = function (feature,resolution) {
     return new ol.style.Style({
-            fill:new ol.style.Fill ({color:tempconverter(feature.get('twinter'))}),
+            fill:new ol.style.Fill ({color:tempconverter(feature.get('twinter')+9)}),
             stroke: new ol.style.Stroke({
-                color: tempconverter(feature.get('twinter')),
+                color: tempconverter(feature.get('twinter')+9),
                 width: 0
                 }),
             text:new ol.style.Text({
@@ -247,9 +338,9 @@ var ptotstyleFunction= function (feature,resolution){
 
 var pzomerstyleFunction= function (feature,resolution){
     return new ol.style.Style({
-        fill:new ol.style.Fill({color:precconverter(feature.get('pzomer'))}),
+        fill:new ol.style.Fill({color:precconverter(feature.get('pzomer')*4)}),
         stroke: new ol.style.Stroke({
-            color: precconverter(feature.get('pzomer')),
+            color: precconverter(feature.get('pzomer')*4),
             width: 0
             }),
         text:new ol.style.Text({
@@ -271,9 +362,9 @@ var pzomerstyleFunction= function (feature,resolution){
 
 var pwinterstyleFunction= function (feature,resolution){
     return new ol.style.Style({
-        fill:new ol.style.Fill({color:precconverter(feature.get('pwinter'))}),
+        fill:new ol.style.Fill({color:precconverter(feature.get('pwinter')*4)}),
         stroke: new ol.style.Stroke({
-            color: precconverter(feature.get('pwinter')),
+            color: precconverter(feature.get('pwinter')*4),
             width: 0
             }),
         text:new ol.style.Text({
@@ -309,8 +400,11 @@ var klimdata=new ol.layer.Vector({
     name:'tmax01',
     source: tempsource,
     style:tgemstyleFunction,
-    opacity:0.6
+    opacity:0.6,
+    visible:false
 });
+
+
 
 
 var lagen=new ol.layer.Group({
@@ -319,6 +413,7 @@ var lagen=new ol.layer.Group({
 
 
 function setMapType(newType,style){
+    klimdata.setVisible(true);
     klimdata.setStyle(style);
     parameter=newType;
     unit=parameters[newType];
@@ -332,7 +427,7 @@ function setMapType(newType,style){
     var hightwinter=$( "#maxtwinter" ).val();
     var lowpzomer=$( "#minpzomer" ).val();
     var highpzomer=$( "#maxpzomer" ).val();
-    var lowpwinter=$( "#mintwinter" ).val();
+    var lowpwinter=$( "#minpwinter" ).val();
     var highpwinter=$( "#maxpwinter" ).val();
     
     klimdata.getSource().getFeatures().forEach(function (feature){
@@ -349,6 +444,9 @@ function setMapType(newType,style){
     })
 };
 
+function hideLayer(){
+    klimdata.setVisible(false);
+}
 
 
 
@@ -383,17 +481,34 @@ closer.onclick = function () {
 };
 
 
+var mousePositionControl = new ol.control.MousePosition({
+  coordinateFormat: ol.coordinate.createStringXY(4),
+  projection: 'EPSG:4326',
+  // comment the following two lines to have the mouse position
+  // be placed within the map.
+  className: 'custom-mouse-position',
+  target: document.getElementById('coordinaten'),
+  undefinedHTML: '',
+});
+
+
 var map = new ol.Map({
+controls: ol.control.defaults().extend([mousePositionControl]),
 target: 'map',
 layers:
   lagen
 ,
 overlays:[overlay],
 view: new ol.View({
-  center: ol.proj.fromLonLat([3, 50]),
-  zoom: 6
+  center: ol.proj.fromLonLat([3, 51]),
+  //projection:canadaProjection,
+  zoom: 5,
+  minZoom:4
 })
 });
+
+
+
 
 
 
@@ -430,7 +545,7 @@ var displayFeatureInfo = function (pixel) {
     if (features.length >0) {
       container.innerHTML='';
       for (var key in parameters){
-      container.innerHTML += key + ": " + features[0].get(key) + ' ' + document.getElementById(key).value + '<br>'; 
+      container.innerHTML += key + ": " + features[0].get(key) + ' ' + document.getElementById(key).value + '<br>';      
       }
     }
     else {
