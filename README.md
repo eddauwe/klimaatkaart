@@ -1,3 +1,3 @@
 # klimaatkaart
 
-https://edwaz56.github.io/klimaatkaart/wereldklimaatkaart.html
+https://eddauwe.github.io/klimaatkaart/wereldklimaatkaart.html
