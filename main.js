@@ -314,7 +314,7 @@ var klimdata=new ol.layer.Vector({
 
 
 var lagen=new ol.layer.Group({
-    layers:[osmlayer,klimdata]
+    layers:[osmlayer,klimdata,new ol.layer.Graticule()]
 });
 
 
