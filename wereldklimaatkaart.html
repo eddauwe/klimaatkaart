@@ -2,16 +2,83 @@
 <html lang="en">
   <head>
     <!--solve favicon.ico error-->
-    <link rel="shortcut icon" href="">
+    <link rel="shortcut icon" href="#">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css" type="text/css">
     <style>  
     
-    .selector {
-        position:relative;
+    #gegevenslaag {
+        position:absolute;
         left:0px;
-        top:560px;
+        bottom:10px;
         width:250px;
     }
+    
+    .custom-select {
+        position:absolute;
+        font-family:Arial;
+        right:190px;
+        top:50px;
+    }
+    
+    .custom-select select {
+        display: none;
+    }
+    
+    .select-selected {
+        background-color: DodgerBlue;
+    }
+    
+    
+    /* Style the arrow inside the select element: */
+    .select-selected:after {
+      position: absolute;
+      content: "";
+      top: 14px;
+      right: 10px;
+      width: 0;
+      height: 0;
+      border: 6px solid transparent;
+      border-color: #fff transparent transparent transparent;
+    }
+    
+    
+        /* Point the arrow upwards when the select box is open (active): */
+    .select-selected.select-arrow-active:after {
+      border-color: transparent transparent #fff transparent;
+      top: 7px;
+    }
+
+    /* style the items (options), including the selected item: */
+    .select-items div,.select-selected {
+      color: #ffffff;
+      padding: 8px 16px;
+      border: 1px solid transparent;
+      border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+      cursor: pointer;
+    }
+
+    /* Style items (options): */
+    .select-items {
+      position: absolute;
+      background-color: DodgerBlue;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 99;
+    }
+
+    /* Hide the items when the select box is closed: */
+    .select-hide {
+      display: none;
+    }
+
+    .select-items div:hover, .same-as-selected {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    
+    
+    
     
       /* The container */
     .container {
@@ -29,9 +96,9 @@
 
       .map {
         position:absolute;
-        right:200px;
-        width:1400px;
-        height:700px;
+        left:0px;
+        width:88%;
+        height:92%;
       }
       
       .ui-content {
@@ -45,7 +112,14 @@
       #info {
         position:absolute;
         right:80px;
-        top:40px;
+        top:45px;
+        background-color:yellow;
+      }
+      
+      #coordinaten {
+        position:absolute;
+        left:20px;
+        top:20px;
         background-color:yellow;
       }
       
@@ -92,7 +166,47 @@
         content: "X";
       }
       
+      .bw{
+        filter:grayscale(100%);
+      }
       
+	  
+	  /* Style the tab */
+	.tab {
+	  float:top
+	  border: 1px solid #ccc;
+	  background-color: #f1f1f1;
+	  width: 100%;
+	  height: 100px;
+	  bottom: 0px;
+	}
+	  
+	  
+	  
+      /* Style the buttons inside the tab */
+	.tab button {
+	  display: block;
+	  background-color: inherit;
+	  color: black;
+	  padding: 22px 16px;
+	  width: 100%;
+	  border: none;
+	  outline: none;
+	  text-align: left;
+	  cursor: pointer;
+	  font-size: 17px;
+	  float: left
+	}
+
+	/* Change background color of buttons on hover */
+	.tab button:hover {
+	  background-color: #ddd;
+	}
+
+	/* Create an active/current "tab button" class */
+	.tab button.active {
+	  background-color: #ccc;
+	}
       
     </style>
     
@@ -106,10 +220,12 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.3/proj4.js"></script>
+    
     
     
     <!--geojson object-->
-    <script src="klimdata.geojson.js"></script>
+    <script src="klimdata_nh.geojson.js"></script>
     <!--geocoder-->
     <link href="https://unpkg.com/ol-geocoder/dist/ol-geocoder.min.css" rel="stylesheet">
     
@@ -122,6 +238,10 @@
     <!--geojson vt-->
     <script src="https://unpkg.com/geojson-vt@3.2.0/geojson-vt.js"></script>
     
+
+    <!--Add l72 coordinate system-->
+	<script>proj4.defs('EPSG:31370','+proj=lcc +lat_1=51.16666723333333 +lat_2=49.8333339 +lat_0=90 +lon_0=4.367486666666666 +x_0=150000.013 +y_0=5400088.438 +ellps=intl +towgs84=106.869,-52.2978,103.724,-0.33657,0.456955,-1.84218,1 +units=m +no_defs')</script>
+
     
   </head>
   <body>
@@ -133,8 +253,10 @@
         <div id="map" class="map"></div> 
         
         
-        <div class="selector">
-              <input type="radio" id="tgem" checked="checked" name="radio" onclick="setMapType('tgem',tgemstyleFunction);" value="C">
+        <div class="selector" id = "gegevenslaag">
+              <input type="radio" id="tgem" checked="checked" name="radio" onclick="hideLayer();" value="C">
+              <label for="temp">Geen gegevenslaag</label><br>  
+              <input type="radio" id="tgem" name="radio" onclick="setMapType('tgem',tgemstyleFunction);" value="C">
               <label for="temp">Gemiddelde jaarlijkse temperatuur</label><br>
               <input type="radio" id="ptot" name="radio" onclick="setMapType('ptot',ptotstyleFunction);" value="mm">  
               <label for="prec">Gemiddelde jaarlijkse totaalneerslag</label><br>
@@ -147,8 +269,24 @@
               <input type="radio" id="pwinter" name="radio" onclick="setMapType('pwinter',pwinterstyleFunction);" value="mm">  
               <label for="is">Gemiddelde totale neerslag winter</label>             
         </div>
+        
+       
+        
+        
+        <div class = "custom-select" style="width:200px;">
+            <select id="projectiesysteem">
+                <option value ="0">Selecteer projectiesysteem</option>
+                <option value ="1">WGS 84 / Pseudo-Mercator</option>
+				<option value ="2">Lambert 72</option>	
+            </select>       
+        </div>
+        
+        
+        
      
         <div id="info">&nbsp;</div>
+        
+        <div id="coordinaten"></div>
         
         
         
@@ -184,8 +322,20 @@
     </div>   
     <script type="text/javascript" src="main.js"></script>
     <script type="text/javascript" src="sliderselect.js"></script>
-    
+    <!--selectbox-->
+    <script src="customselectbox.js"></script>
     <!--jaargemiddelden sliders--> 
+	
+	<!--
+	<div class="tab">
+	  <button class="tablinks" onmouseover="openCity(event, 'jaargemiddelden')">Jaargemiddelden</button>
+	  <button class="tablinks" onmouseover="openCity(event, 'seizoensgemiddelden')">Seizoensgemiddelden</button>
+	  <button class="tablinks" onmouseover="openCity(event, 'bioclimatischeparameters')">Bioclimatische parameters</button>
+	</div>
+	-->
+	
+	
+	<div id="jaargemiddelden" class="tabcontent">
     <div style="position:fixed;height:100px;top:190px;right:0px;width:180px"><label style="font-size:14px;">Jaargemiddelden</label>    
         <div style="position:absolute;height:100px;top:20px;left:0px">
             <label style="font-size:10px;">Temperatuur</label><br>
@@ -201,8 +351,11 @@
             <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="minp" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">mm</label>
         </div>           
     </div>
-    
+    </div>	
 
+
+
+	<div id="seizoensgemiddelden" class="tabcontent">
     <!--seizoensgemiddelden temperatuur sliders-->
     <div style="position:fixed;height:100px;top:390px;right:0px;width:180px"><label style="font-size:12px;">Seizoensgemiddelden temperatuur</label>    
         <div style="position:absolute;height:100px;top:20px;left:0px">
@@ -218,8 +371,8 @@
             <div id="slider-range4" style="position:relative;height:100px;top:10px;"></div>    
             <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="mintwinter" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">C</label>
         </div>           
-    </div>    
-    
+    </div>  
+
     <!--seizoensgemiddelden neerslag sliders-->
     <div style="position:fixed;height:100px;top:590px;right:0px;width:180px"><label style="font-size:12px;">Seizoensgemiddelden neerslag</label>    
         <div style="position:absolute;height:100px;top:20px;left:0px">
@@ -229,17 +382,36 @@
             <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="minpzomer" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">mm</label>
         </div>
         
-        <div style="position:absolute;height:100px;top:20px;left:100px;background-color:yellow">
+        <div style="position:absolute;height:100px;top:20px;left:100px">
             <label style="font-size:10px;">Winter</label><br>
             <label style="font-size:8px;">max</label><input type="text" id="maxpwinter" style="position:relative;top:0px;width: 25px;border:0; color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;bottom:0px;font-size:10px;">mm</label>
             <div id="slider-range6" style="position:relative;height:100px;top:10px;"></div>    
             <label style="position:relative;font-size:8px;top:20px;">min</label><input type="text" id="minpwinter" style="position:relative;top:20px;border:0;width:25px;color:#f6931f; font-weight:bold;"></input><label style="position:relative;left:0px;top:20px;font-size:10px;">mm</label>
         </div>           
     </div>      
+    </div>
+	
+	<div id="bioclimatischeparameters" class="tabcontent">
+	</div>
+	
+	
     
     
-    
-
+	<script>
+	function openCity(evt, cityName) {
+	  var i, tabcontent, tablinks;
+	  tabcontent = document.getElementsByClassName("tabcontent");
+	  for (i = 0; i < tabcontent.length; i++) {
+		tabcontent[i].style.display = "none";
+	  }
+	  tablinks = document.getElementsByClassName("tablinks");
+	  for (i = 0; i < tablinks.length; i++) {
+		tablinks[i].className = tablinks[i].className.replace(" active", "");
+	  }
+	  document.getElementById(cityName).style.display = "block";
+	  evt.currentTarget.className += " active";
+	}
+	</script>
     
     
     
@@ -262,7 +434,7 @@
         //Bounds(ui);
       },
       change:function(event,ui) {
-        klimaatfilter(ui);
+        klimaatfilter();
       }
     });
     $( "#minp" ).val($( "#slider-range1" ).slider( "values", 0 ));
@@ -286,7 +458,7 @@
         $( "#maxt" ).val(ui.values[ 1 ]);
       },
       change:function(event,ui) {
-        klimaatfilter(ui);
+        klimaatfilter();
       }
     });
     $( "#mint" ).val($( "#slider-range2" ).slider( "values", 0 ));
@@ -311,7 +483,7 @@
         //Bounds(ui);
       },
       change:function(event,ui) {
-        klimaatfilter(ui);
+        klimaatfilter();
       }
     });
     $( "#mintzomer" ).val($( "#slider-range3" ).slider( "values", 0 ));
@@ -336,7 +508,7 @@
         //Bounds(ui);
       },
       change:function(event,ui) {
-        klimaatfilter(ui);
+        klimaatfilter();
       }
     });
     $( "#mintwinter" ).val($( "#slider-range4" ).slider( "values", 0 ));
@@ -359,7 +531,7 @@
         //Bounds(ui);
       },
       change:function(event,ui) {
-        klimaatfilter(ui);
+        klimaatfilter();
       }
     });
     $( "#minpzomer" ).val($( "#slider-range5" ).slider( "values", 0 ));
@@ -383,7 +555,7 @@
         //Bounds(ui);
       },
       change:function(event,ui) {
-        klimaatfilter(ui);
+        klimaatfilter();
       }
     });
     $( "#minpwinter" ).val($( "#slider-range6" ).slider( "values", 0 ));
